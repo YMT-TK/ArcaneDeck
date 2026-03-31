@@ -1,0 +1,474 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.card:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-deleted {
+  opacity: 0.6;
+  border-style: dashed;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.card-type-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  color: var(--color-bg);
+  flex-shrink: 0;
+}
+
+.card-type-icon.link-icon {
+  background: #3b82f6;
+}
+
+.card-favicon {
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+}
+
+.card-title-wrapper {
+  flex: 1;
+  min-width: 0;
+}
+
+.card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-url {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  margin: 2px 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-title-input {
+  width: 100%;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  outline: none;
+}
+
+.card-title-input:focus {
+  border-color: var(--color-primary);
+}
+
+.card-actions {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.card-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.card-action-btn:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-primary);
+}
+
+.card-menu-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.card-menu-button:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-primary);
+}
+
+.card-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  min-width: 120px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  overflow: hidden;
+}
+
+.card-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.card-menu-item:hover {
+  background: var(--color-bg-hover);
+}
+
+.card-menu-item.delete {
+  color: #ef4444;
+}
+
+.card-menu-item.delete:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.card-content {
+  flex: 1;
+  min-height: 60px;
+  margin-bottom: 12px;
+}
+
+.card-content-preview {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+.card-content-preview p {
+  margin: 0;
+}
+
+.card-content-empty {
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.card-description {
+  font-size: var(--font-size-text, 14px);
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.card-type-label {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-size: 0.625rem;
+  padding: 2px 6px;
+  background: var(--color-bg-tertiary);
+  border-radius: var(--radius-sm);
+}
+
+.card-edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border);
+}
+
+.card-btn {
+  padding: 6px 16px;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.card-btn.cancel {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+}
+
+.card-btn.cancel:hover {
+  background: var(--color-bg-hover);
+}
+
+.card-btn.save {
+  background: var(--color-primary);
+  color: var(--color-bg);
+}
+
+.card-btn.save:hover {
+  opacity: 0.9;
+}
+
+/* 便签卡片样式 */
+.card-note {
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-note .card-content {
+  margin-bottom: 8px;
+  min-height: auto;
+}
+
+.note-textarea {
+  width: 100%;
+  min-height: 80px;
+  border: none;
+  background: transparent;
+  font-size: var(--font-size-text, 14px);
+  line-height: 1.6;
+  resize: none;
+  outline: none;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+.note-text {
+  font-size: var(--font-size-text, 14px);
+  line-height: 1.6;
+  color: #374151;
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.card-note .card-footer {
+  padding: 8px 12px;
+  border-top: 1px dashed rgba(0, 0, 0, 0.1);
+  margin: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.note-edit-btn {
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #6b7280;
+  background: rgba(0, 0, 0, 0.05);
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.note-edit-btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #374151;
+}
+
+/* 便签颜色 */
+.note-yellow {
+  background: linear-gradient(135deg, #fef9c3, #fef08a);
+}
+
+.note-pink {
+  background: linear-gradient(135deg, #fce7f3, #fbcfe8);
+}
+
+.note-blue {
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+}
+
+.note-green {
+  background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+}
+
+.note-purple {
+  background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
+}
+
+/* 链接卡片样式 */
+.card-link {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(99, 102, 241, 0.05));
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.card-link:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
+}
+
+/* 图文卡片样式 */
+.card-image-wrapper {
+  width: 100%;
+  margin: -16px -16px 12px;
+  overflow: hidden;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.card-image {
+  width: 100%;
+  height: auto;
+  max-height: 200px;
+  object-fit: cover;
+}
+
+.card-caption {
+  font-size: var(--font-size-text, 14px);
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.card-caption-input {
+  width: 100%;
+  min-height: 60px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: 8px;
+  font-size: var(--font-size-text, 14px);
+  resize: none;
+  outline: none;
+  background: var(--color-bg-tertiary);
+  color: var(--color-text);
+}
+
+.card-caption-input:focus {
+  border-color: var(--color-primary);
+}
+
+/* 科幻主题 */
+[data-theme="scifi"] .card {
+  border-color: rgba(0, 240, 255, 0.2);
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.05), rgba(185, 103, 255, 0.05));
+}
+
+[data-theme="scifi"] .card:hover {
+  border-color: #00f0ff;
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+}
+
+[data-theme="scifi"] .card-type-icon {
+  background: linear-gradient(135deg, #00f0ff, #b967ff);
+}
+
+[data-theme="scifi"] .card-link {
+  background: linear-gradient(135deg, rgba(0, 240, 255, 0.1), rgba(59, 130, 246, 0.1));
+  border-color: rgba(0, 240, 255, 0.3);
+}
+
+[data-theme="scifi"] .card-link:hover {
+  border-color: #00f0ff;
+}
+
+/* 魔法主题 */
+[data-theme="magic"] .card {
+  border-color: rgba(212, 175, 55, 0.3);
+  background: linear-gradient(135deg, rgba(245, 222, 179, 0.1), rgba(139, 0, 0, 0.05));
+}
+
+[data-theme="magic"] .card:hover {
+  border-color: #d4af37;
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+}
+
+[data-theme="magic"] .card-type-icon {
+  background: linear-gradient(135deg, #d4af37, #8b0000);
+}
+
+[data-theme="magic"] .card-link {
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(139, 0, 0, 0.1));
+  border-color: rgba(212, 175, 55, 0.4);
+}
+
+[data-theme="magic"] .card-link:hover {
+  border-color: #d4af37;
+}
+
+/* 精简主题 */
+[data-theme="minimal"] .card {
+  border-color: #e5e7eb;
+  background: white;
+}
+
+[data-theme="minimal"] .card:hover {
+  border-color: #374151;
+}
+
+[data-theme="minimal"] .card-type-icon {
+  background: #374151;
+}
+
+[data-theme="minimal"] .card-link {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+
+[data-theme="minimal"] .card-link:hover {
+  border-color: #3b82f6;
+}
+
+/* 便签在深色主题下的样式 */
+[data-theme="scifi"] .note-text,
+[data-theme="magic"] .note-text {
+  color: #1f2937;
+}
+
+[data-theme="scifi"] .card-note .card-footer,
+[data-theme="magic"] .card-note .card-footer {
+  border-top-color: rgba(0, 0, 0, 0.1);
+}

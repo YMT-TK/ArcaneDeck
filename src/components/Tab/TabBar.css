@@ -1,0 +1,296 @@
+.tab-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.tabs-container {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tabs-container::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.tab-item:hover {
+  background: var(--color-bg-hover);
+  border-color: var(--color-primary);
+}
+
+.tab-item.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-bg);
+}
+
+.tab-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+}
+
+.tab-name {
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tab-count {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+}
+
+.tab-item.active .tab-count {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.tab-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: inherit;
+  opacity: 0.5;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-close:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.tab-item.active .tab-close:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.tab-edit-form,
+.tab-item.creating {
+  padding: 0;
+}
+
+.tab-edit-input,
+.tab-create-input {
+  width: 100%;
+  padding: 6px 8px;
+  background: var(--color-bg);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  font-size: 0.875rem;
+  outline: none;
+}
+
+.tab-add-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: var(--color-bg-tertiary);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-add-button:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.tab-add-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.recycle-bin-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.recycle-bin-button:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
+.recycle-bin-button.active {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: white;
+}
+
+.recycle-bin-count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  background: #ef4444;
+  border-radius: var(--radius-full);
+  color: white;
+  font-size: 0.625rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-confirm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.delete-confirm-dialog {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+}
+
+.delete-confirm-icon {
+  color: #f59e0b;
+  margin-bottom: 16px;
+}
+
+.delete-confirm-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0 0 8px;
+}
+
+.delete-confirm-message {
+  color: var(--color-text-secondary);
+  margin: 0 0 16px;
+}
+
+.delete-confirm-warning {
+  color: #f59e0b;
+  font-size: 0.875rem;
+  margin: 0 0 16px;
+  padding: 12px;
+  background: rgba(245, 158, 11, 0.1);
+  border-radius: var(--radius-md);
+}
+
+.delete-confirm-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.delete-confirm-btn {
+  padding: 10px 24px;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.delete-confirm-btn.cancel {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+}
+
+.delete-confirm-btn.cancel:hover {
+  background: var(--color-bg-hover);
+}
+
+.delete-confirm-btn.confirm {
+  background: #ef4444;
+  color: white;
+}
+
+.delete-confirm-btn.confirm:hover {
+  opacity: 0.9;
+}
+
+[data-theme="scifi"] .tab-item.active {
+  background: linear-gradient(135deg, #00f0ff, #b967ff);
+  border-color: transparent;
+}
+
+[data-theme="scifi"] .tab-add-button:hover:not(:disabled) {
+  border-color: #00f0ff;
+  color: #00f0ff;
+}
+
+[data-theme="magic"] .tab-item.active {
+  background: linear-gradient(135deg, #d4af37, #8b0000);
+  border-color: transparent;
+}
+
+[data-theme="magic"] .tab-add-button:hover:not(:disabled) {
+  border-color: #d4af37;
+  color: #d4af37;
+}
+
+[data-theme="minimal"] .tab-item.active {
+  background: #374151;
+  border-color: #374151;
+}

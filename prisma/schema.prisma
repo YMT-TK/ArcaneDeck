@@ -1,0 +1,69 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./arcanedeck.db"
+}
+
+model Card {
+  id          String   @id @default(uuid())
+  title       String
+  content     String
+  type        String   @default("note")
+  status      String   @default("active")
+  tabId       String?
+  position    Int      @default(0)
+  style       String?
+  url         String?
+  imagePath   String?
+  favicon     String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+  
+  tab         Tab?       @relation(fields: [tabId], references: [id], onDelete: SetNull)
+  attachments Attachment[]
+
+  @@index([tabId])
+  @@index([status])
+  @@index([type])
+}
+
+model Tab {
+  id        String   @id @default(uuid())
+  name      String
+  position  Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  cards     Card[]
+
+  @@index([position])
+}
+
+model Attachment {
+  id        String   @id @default(uuid())
+  filename  String
+  path      String
+  mimeType  String
+  size      Int
+  cardId    String
+  createdAt DateTime @default(now())
+  
+  card      Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@index([cardId])
+}
+
+model Config {
+  id         String   @id @default("app")
+  theme      String   @default("scifi")
+  layout     String   @default("grid")
+  fontSize   Int      @default(16)
+  autoBackup Boolean  @default(true)
+  backupPath String?
+  language   String   @default("zh-CN")
+  updatedAt  DateTime @updatedAt
+}

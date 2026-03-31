@@ -1,0 +1,168 @@
+.type-selector-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.type-selector-modal {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+  max-width: 600px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.type-selector-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.type-selector-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.type-selector-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--color-bg-tertiary);
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.type-selector-close:hover {
+  background: var(--color-bg-hover);
+  color: var(--color-text);
+}
+
+.type-selector-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.type-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px;
+  background: var(--color-bg-tertiary);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+}
+
+.type-option:hover,
+.type-option.hovered {
+  border-color: var(--color-primary);
+  background: var(--color-bg-hover);
+}
+
+.type-option-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-lg);
+  background: var(--color-primary);
+  color: var(--color-bg);
+  flex-shrink: 0;
+}
+
+.type-option-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.type-option-label {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0 0 4px;
+}
+
+.type-option-description {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin: 0 0 8px;
+}
+
+.type-option-layout {
+  display: inline-block;
+  font-size: 0.75rem;
+  color: var(--color-primary);
+  background: rgba(var(--color-primary-rgb), 0.1);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.type-selector-footer {
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+}
+
+.type-selector-hint {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+  margin: 0;
+  text-align: center;
+}
+
+[data-theme="scifi"] .type-option-icon {
+  background: linear-gradient(135deg, #00f0ff, #b967ff);
+}
+
+[data-theme="scifi"] .type-option:hover,
+[data-theme="scifi"] .type-option.hovered {
+  border-color: #00f0ff;
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+}
+
+[data-theme="magic"] .type-option-icon {
+  background: linear-gradient(135deg, #d4af37, #8b0000);
+}
+
+[data-theme="magic"] .type-option:hover,
+[data-theme="magic"] .type-option.hovered {
+  border-color: #d4af37;
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+}
+
+[data-theme="minimal"] .type-option-icon {
+  background: #374151;
+}
+
+[data-theme="minimal"] .type-option:hover,
+[data-theme="minimal"] .type-option.hovered {
+  border-color: #374151;
+}
+
+@media (max-width: 640px) {
+  .type-selector-grid {
+    grid-template-columns: 1fr;
+  }
+}

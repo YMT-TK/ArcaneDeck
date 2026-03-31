@@ -1,0 +1,355 @@
+.card-grid-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.card-grid-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.toolbar-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.card-count {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  padding: 4px 12px;
+  background: var(--color-bg-tertiary);
+  border-radius: var(--radius-full);
+}
+
+.toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.toolbar-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toolbar-button:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.view-mode-toggle {
+  display: flex;
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.view-mode-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: none;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-mode-btn:hover {
+  color: var(--color-text);
+}
+
+.view-mode-btn.active {
+  background: var(--color-primary);
+  color: var(--color-bg);
+}
+
+.add-card-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--color-bg);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.add-card-button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.card-grid-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.card-grid-content.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  align-content: start;
+}
+
+.card-grid-content.masonry {
+  column-count: 3;
+  column-gap: 16px;
+}
+
+.card-grid-content.masonry .card {
+  break-inside: avoid;
+  margin-bottom: 16px;
+}
+
+/* 混合布局样式 */
+.card-grid-content.auto {
+  padding: 0;
+}
+
+.mixed-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 16px;
+}
+
+.masonry-section,
+.grid-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.section-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 12px;
+  background: var(--color-bg-tertiary);
+  border-radius: var(--radius-sm);
+  width: fit-content;
+}
+
+.masonry-grid {
+  column-count: 3;
+  column-gap: 16px;
+}
+
+.masonry-grid .card {
+  break-inside: avoid;
+  margin-bottom: 16px;
+}
+
+.uniform-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  align-content: start;
+}
+
+@media (max-width: 1400px) {
+  .masonry-grid {
+    column-count: 2;
+  }
+}
+
+@media (max-width: 1000px) {
+  .masonry-grid {
+    column-count: 1;
+  }
+  
+  .uniform-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 1200px) {
+  .card-grid-content.masonry {
+    column-count: 2;
+  }
+}
+
+@media (max-width: 768px) {
+  .card-grid-content.masonry {
+    column-count: 1;
+  }
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--color-text-secondary);
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  padding: 40px;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+}
+
+.empty-state h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0 0 8px;
+}
+
+.empty-state p {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin: 0 0 24px;
+}
+
+.empty-add-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--color-bg);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.empty-add-button:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* 编辑器弹窗样式 */
+.editor-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.editor-modal {
+  background: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow: auto;
+}
+
+[data-theme="scifi"] .add-card-button,
+[data-theme="scifi"] .empty-add-button {
+  background: linear-gradient(135deg, #00f0ff, #b967ff);
+}
+
+[data-theme="scifi"] .view-mode-btn.active {
+  background: linear-gradient(135deg, #00f0ff, #b967ff);
+}
+
+[data-theme="scifi"] .section-label {
+  background: rgba(0, 240, 255, 0.1);
+  color: #00f0ff;
+}
+
+[data-theme="scifi"] .editor-overlay {
+  background: rgba(0, 0, 20, 0.8);
+}
+
+[data-theme="magic"] .add-card-button,
+[data-theme="magic"] .empty-add-button {
+  background: linear-gradient(135deg, #d4af37, #8b0000);
+}
+
+[data-theme="magic"] .view-mode-btn.active {
+  background: linear-gradient(135deg, #d4af37, #8b0000);
+}
+
+[data-theme="magic"] .section-label {
+  background: rgba(212, 175, 55, 0.1);
+  color: #d4af37;
+}
+
+[data-theme="magic"] .editor-overlay {
+  background: rgba(20, 10, 0, 0.8);
+}
+
+[data-theme="minimal"] .add-card-button,
+[data-theme="minimal"] .empty-add-button {
+  background: #374151;
+}
+
+[data-theme="minimal"] .view-mode-btn.active {
+  background: #374151;
+}
+
+[data-theme="minimal"] .editor-overlay {
+  background: rgba(0, 0, 0, 0.4);
+}

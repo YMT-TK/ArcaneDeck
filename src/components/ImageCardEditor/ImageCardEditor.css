@@ -1,0 +1,234 @@
+.image-card-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  min-width: 360px;
+}
+
+.image-editor-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.image-editor-header h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.image-icon {
+  color: #10b981;
+}
+
+.image-editor-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.image-upload-area {
+  width: 100%;
+}
+
+.upload-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 32px 16px;
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-tertiary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.upload-dropzone:hover {
+  border-color: var(--color-primary);
+  background: var(--color-bg-hover);
+}
+
+.upload-dropzone.dragging {
+  border-color: var(--color-primary);
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.upload-icon {
+  color: var(--color-text-muted);
+}
+
+.upload-dropzone p {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.upload-hint {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.loading-spinner {
+  color: var(--color-primary);
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.image-preview-container {
+  position: relative;
+  width: 100%;
+}
+
+.image-preview {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+}
+
+.remove-image-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.remove-image-btn:hover {
+  background: rgba(239, 68, 68, 0.8);
+}
+
+.error-message {
+  font-size: 0.75rem;
+  color: #ef4444;
+}
+
+.caption-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.caption-field label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.caption-field textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-tertiary);
+  color: var(--color-text);
+  font-size: 0.875rem;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s ease;
+  font-family: inherit;
+}
+
+.caption-field textarea:focus {
+  border-color: var(--color-primary);
+}
+
+.caption-field textarea::placeholder {
+  color: var(--color-text-muted);
+}
+
+.image-editor-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.cancel-btn,
+.save-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-btn {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+}
+
+.cancel-btn:hover {
+  background: var(--color-bg-hover);
+}
+
+.save-btn {
+  background: #10b981;
+  color: white;
+}
+
+.save-btn:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+.save-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+[data-theme="scifi"] .image-icon {
+  color: #00f0ff;
+}
+
+[data-theme="scifi"] .save-btn {
+  background: linear-gradient(135deg, #00f0ff, #b967ff);
+}
+
+[data-theme="scifi"] .upload-dropzone:hover {
+  border-color: #00f0ff;
+}
+
+[data-theme="magic"] .image-icon {
+  color: #d4af37;
+}
+
+[data-theme="magic"] .save-btn {
+  background: linear-gradient(135deg, #d4af37, #8b0000);
+}
+
+[data-theme="magic"] .upload-dropzone:hover {
+  border-color: #d4af37;
+}

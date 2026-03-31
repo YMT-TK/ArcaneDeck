@@ -1,0 +1,239 @@
+import prisma from './database'
+import { Card } from '@prisma/client'
+import validator from 'validator'
+
+/**
+ * 卡片类型
+ * - note: 便签（瀑布流布局）
+ * - doc: 笔记（统一网格布局）
+ * - link: 网址（统一网格布局）
+ * - image: 图文（瀑布流布局）
+ */
+export type CardType = 'note' | 'doc' | 'link' | 'image'
+
+/**
+ * 卡片状态
+ */
+export type CardStatus = 'active' | 'archived' | 'deleted'
+
+/**
+ * 卡片创建输入接口
+ */
+export interface CreateCardInput {
+  title: string
+  content: string
+  type?: CardType
+  tabId?: string
+  style?: string
+  url?: string
+  imagePath?: string
+  favicon?: string
+}
+
+/**
+ * 卡片更新输入接口
+ */
+export interface UpdateCardInput {
+  title?: string
+  content?: string
+  type?: CardType
+  tabId?: string | null
+  position?: number
+  style?: string
+  status?: CardStatus
+  url?: string
+  imagePath?: string
+  favicon?: string
+}
+
+/**
+ * 卡片服务类
+ * @description 处理所有卡片相关的数据库操作
+ */
+export class CardService {
+  /**
+   * 创建新卡片
+   */
+  static async create(data: CreateCardInput): Promise<Card> {
+    const sanitizedTitle = this.sanitizeInput(data.title)
+    const sanitizedContent = this.sanitizeInput(data.content)
+
+    const maxPosition = await prisma.card.aggregate({
+      where: { tabId: data.tabId ?? null, status: 'active' },
+      _max: { position: true },
+    })
+
+    const position = (maxPosition._max.position ?? -1) + 1
+
+    return prisma.card.create({
+      data: {
+        title: sanitizedTitle,
+        content: sanitizedContent,
+        type: data.type ?? 'note',
+        tabId: data.tabId,
+        style: data.style,
+        url: data.url,
+        imagePath: data.imagePath,
+        favicon: data.favicon,
+        position,
+      },
+    })
+  }
+
+  /**
+   * 更新卡片
+   */
+  static async update(id: string, data: UpdateCardInput): Promise<Card> {
+    const updateData: UpdateCardInput = { ...data }
+
+    if (data.title) {
+      updateData.title = this.sanitizeInput(data.title)
+    }
+    if (data.content) {
+      updateData.content = this.sanitizeInput(data.content)
+    }
+
+    return prisma.card.update({
+      where: { id },
+      data: updateData,
+    })
+  }
+
+  /**
+   * 软删除卡片
+   */
+  static async softDelete(id: string): Promise<Card> {
+    return prisma.card.update({
+      where: { id },
+      data: {
+        status: 'deleted',
+        deletedAt: new Date(),
+      },
+    })
+  }
+
+  /**
+   * 恢复已删除的卡片
+   */
+  static async restore(id: string): Promise<Card> {
+    return prisma.card.update({
+      where: { id },
+      data: {
+        status: 'active',
+        deletedAt: null,
+      },
+    })
+  }
+
+  /**
+   * 永久删除卡片
+   */
+  static async permanentDelete(id: string): Promise<void> {
+    await prisma.card.delete({
+      where: { id },
+    })
+  }
+
+  /**
+   * 获取所有活跃卡片
+   */
+  static async getAll(tabId?: string): Promise<Card[]> {
+    return prisma.card.findMany({
+      where: {
+        status: 'active',
+        tabId: tabId ?? null,
+      },
+      orderBy: { position: 'asc' },
+    })
+  }
+
+  /**
+   * 获取已删除的卡片
+   */
+  static async getDeleted(): Promise<Card[]> {
+    return prisma.card.findMany({
+      where: { status: 'deleted' },
+      orderBy: { deletedAt: 'desc' },
+    })
+  }
+
+  /**
+   * 根据ID获取卡片
+   */
+  static async getById(id: string): Promise<Card | null> {
+    return prisma.card.findUnique({
+      where: { id },
+      include: { attachments: true },
+    })
+  }
+
+  /**
+   * 搜索卡片
+   */
+  static async search(query: string): Promise<Card[]> {
+    const sanitizedQuery = this.sanitizeInput(query)
+    
+    return prisma.card.findMany({
+      where: {
+        status: 'active',
+        OR: [
+          { title: { contains: sanitizedQuery } },
+          { content: { contains: sanitizedQuery } },
+        ],
+      },
+      orderBy: { updatedAt: 'desc' },
+      take: 50,
+    })
+  }
+
+  /**
+   * 更新卡片位置
+   */
+  static async reorder(cardIds: string[]): Promise<void> {
+    const updates = cardIds.map((id, index) =>
+      prisma.card.update({
+        where: { id },
+        data: { position: index },
+      })
+    )
+
+    await prisma.$transaction(updates)
+  }
+
+  /**
+   * 归档卡片
+   */
+  static async archive(id: string): Promise<Card> {
+    return prisma.card.update({
+      where: { id },
+      data: { status: 'archived' },
+    })
+  }
+
+  /**
+   * 清理过期删除的卡片（超过30天）
+   */
+  static async cleanupDeleted(): Promise<number> {
+    const thirtyDaysAgo = new Date()
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+
+    const result = await prisma.card.deleteMany({
+      where: {
+        status: 'deleted',
+        deletedAt: { lt: thirtyDaysAgo },
+      },
+    })
+
+    return result.count
+  }
+
+  /**
+   * 输入净化
+   */
+  private static sanitizeInput(input: string): string {
+    if (!input || typeof input !== 'string') {
+      return ''
+    }
+    return validator.escape(input.trim())
+  }
+}
