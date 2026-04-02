@@ -1,6 +1,6 @@
-import prisma from './database'
+import { getPrisma } from './database'
 import { Tab } from '@prisma/client'
-import { validator } from 'validator'
+import validator from 'validator'
 
 /**
  * 标签页服务类
@@ -11,6 +11,7 @@ export class TabService {
    * 创建新标签页
    */
   static async create(name: string): Promise<Tab> {
+    const prisma = await getPrisma()
     const sanitizedName = this.sanitizeInput(name)
     
     const maxPosition = await prisma.tab.aggregate({
@@ -31,6 +32,7 @@ export class TabService {
    * 更新标签页名称
    */
   static async update(id: string, name: string): Promise<Tab> {
+    const prisma = await getPrisma()
     const sanitizedName = this.sanitizeInput(name)
     
     return prisma.tab.update({
@@ -43,6 +45,7 @@ export class TabService {
    * 删除标签页
    */
   static async delete(id: string): Promise<void> {
+    const prisma = await getPrisma()
     await prisma.$transaction(async (tx) => {
       await tx.card.updateMany({
         where: { tabId: id },
@@ -59,6 +62,7 @@ export class TabService {
    * 获取所有标签页
    */
   static async getAll(): Promise<Tab[]> {
+    const prisma = await getPrisma()
     return prisma.tab.findMany({
       orderBy: { position: 'asc' },
       include: {
@@ -73,6 +77,7 @@ export class TabService {
    * 根据ID获取标签页
    */
   static async getById(id: string): Promise<Tab | null> {
+    const prisma = await getPrisma()
     return prisma.tab.findUnique({
       where: { id },
     })
@@ -82,6 +87,7 @@ export class TabService {
    * 更新标签页顺序
    */
   static async reorder(tabIds: string[]): Promise<void> {
+    const prisma = await getPrisma()
     const updates = tabIds.map((id, index) =>
       prisma.tab.update({
         where: { id },

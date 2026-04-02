@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { Card, Tab, CardType, CardStatus } from '../types'
+import { Card, Tab, CardStatus } from '../types'
 
 interface CardStore {
   cards: Card[]
@@ -13,6 +13,7 @@ interface CardStore {
   updateCard: (id: string, data: Partial<Card>) => void
   deleteCard: (id: string) => void
   restoreCard: (id: string) => void
+  toggleCardPin: (id: string, pinned: boolean) => void
   
   setTabs: (tabs: Tab[]) => void
   addTab: (tab: Tab) => void
@@ -47,6 +48,11 @@ export const useCardStore = create<CardStore>((set) => ({
   restoreCard: (id) => set((state) => ({
     cards: state.cards.map((card) => 
       card.id === id ? { ...card, status: 'active' as CardStatus, deletedAt: null } : card
+    ),
+  })),
+  toggleCardPin: (id, pinned) => set((state) => ({
+    cards: state.cards.map((card) => 
+      card.id === id ? { ...card, pinned } : card
     ),
   })),
   

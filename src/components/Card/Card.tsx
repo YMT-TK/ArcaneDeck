@@ -12,6 +12,8 @@ import {
   RotateCcw,
   ExternalLink,
   Copy,
+  Pin,
+  PinOff,
 } from 'lucide-react'
 import './Card.css'
 
@@ -38,6 +40,7 @@ interface CardProps {
   content: string
   type: CardType
   status?: CardStatus
+  pinned?: boolean
   url?: string
   imagePath?: string
   favicon?: string
@@ -47,6 +50,7 @@ interface CardProps {
   onDelete?: (id: string) => void
   onRestore?: (id: string) => void
   onArchive?: (id: string) => void
+  onPin?: (id: string) => void
   onClick?: (id: string) => void
 }
 
@@ -83,15 +87,16 @@ const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
     content,
     type,
     status = 'active',
+    pinned = false,
     url,
     imagePath,
     favicon,
-    createdAt,
     updatedAt,
     onEdit,
     onDelete,
     onRestore,
     onArchive,
+    onPin,
     onClick,
   },
   ref
@@ -154,6 +159,11 @@ const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
    */
   const renderNoteCard = () => (
     <div className={`card-note ${noteColor}`}>
+      {pinned && (
+        <div className="card-pin-indicator">
+          <Pin size={12} />
+        </div>
+      )}
       <div className="card-content">
         {isEditing ? (
           <textarea
@@ -171,15 +181,28 @@ const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
       <div className="card-footer">
         <span className="card-date">{formatDate(updatedAt)}</span>
         {!isEditing && (
-          <button
-            className="note-edit-btn"
-            onClick={e => {
-              e.stopPropagation()
-              setIsEditing(true)
-            }}
-          >
-            编辑
-          </button>
+          <div className="note-actions">
+            <button
+              className="note-action-btn"
+              onClick={e => {
+                e.stopPropagation()
+                onPin?.(id)
+              }}
+              title={pinned ? '取消置顶' : '置顶'}
+            >
+              {pinned ? <PinOff size={14} /> : <Pin size={14} />}
+            </button>
+            <button
+              className="note-action-btn delete"
+              onClick={e => {
+                e.stopPropagation()
+                onDelete?.(id)
+              }}
+              title="删除"
+            >
+              <Trash2 size={14} />
+            </button>
+          </div>
         )}
       </div>
       {isEditing && (
@@ -216,10 +239,23 @@ const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
               onClick={e => e.stopPropagation()}
             />
           ) : (
-            <h3 className="card-title">{title || '无标题笔记'}</h3>
+            <h3 className="card-title">
+              {pinned && <Pin size={12} className="card-title-pin" />}
+              {title || '无标题笔记'}
+            </h3>
           )}
         </div>
         <div className="card-actions">
+          <button
+            className="card-action-btn"
+            onClick={e => {
+              e.stopPropagation()
+              onPin?.(id)
+            }}
+            title={pinned ? '取消置顶' : '置顶'}
+          >
+            {pinned ? <PinOff size={14} /> : <Pin size={14} />}
+          </button>
           <button
             className="card-menu-button"
             onClick={e => {
@@ -328,10 +364,23 @@ const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
           {favicon ? <img src={favicon} alt="" className="card-favicon" /> : <Link size={16} />}
         </div>
         <div className="card-title-wrapper">
-          <h3 className="card-title">{title || url || '未命名链接'}</h3>
+          <h3 className="card-title">
+            {pinned && <Pin size={12} className="card-title-pin" />}
+            {title || url || '未命名链接'}
+          </h3>
           {url && <p className="card-url">{new URL(url).hostname}</p>}
         </div>
         <div className="card-actions">
+          <button
+            className="card-action-btn"
+            onClick={e => {
+              e.stopPropagation()
+              onPin?.(id)
+            }}
+            title={pinned ? '取消置顶' : '置顶'}
+          >
+            {pinned ? <PinOff size={14} /> : <Pin size={14} />}
+          </button>
           <button
             className="card-action-btn"
             onClick={e => {
@@ -414,6 +463,11 @@ const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
       {imagePath && (
         <div className="card-image-wrapper">
           <img src={imagePath} alt={title} className="card-image" />
+          {pinned && (
+            <div className="card-image-pin-indicator">
+              <Pin size={12} />
+            </div>
+          )}
         </div>
       )}
       <div className="card-header">
@@ -432,10 +486,23 @@ const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
               onClick={e => e.stopPropagation()}
             />
           ) : (
-            <h3 className="card-title">{title || '图文卡片'}</h3>
+            <h3 className="card-title">
+              {!imagePath && pinned && <Pin size={12} className="card-title-pin" />}
+              {title || '图文卡片'}
+            </h3>
           )}
         </div>
         <div className="card-actions">
+          <button
+            className="card-action-btn"
+            onClick={e => {
+              e.stopPropagation()
+              onPin?.(id)
+            }}
+            title={pinned ? '取消置顶' : '置顶'}
+          >
+            {pinned ? <PinOff size={14} /> : <Pin size={14} />}
+          </button>
           <button
             className="card-menu-button"
             onClick={e => {
@@ -540,7 +607,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
   return (
     <motion.div
       ref={ref}
-      className={`card card-${type} ${isDeleted ? 'card-deleted' : ''} ${noteColor}`}
+      className={`card card-${type} ${isDeleted ? 'card-deleted' : ''} ${pinned ? 'card-pinned' : ''} ${noteColor}`}
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}

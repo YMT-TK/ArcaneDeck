@@ -2,8 +2,8 @@ import { app, dialog } from 'electron'
 import path from 'path'
 import fs from 'fs'
 import archiver from 'archiver'
-import { extract } from 'unzipper'
-import prisma from './database'
+import unzipper from 'unzipper'
+import { getPrisma } from './database'
 
 /**
  * 备份服务类
@@ -45,7 +45,7 @@ export class BackupService {
 
       archive.pipe(output)
 
-      const dbPath = path.join(app.getPath('userData'), 'arcanedeck.db')
+      const dbPath = path.join(app.getPath('userData'), 'data', 'arcanedeck.db')
       if (fs.existsSync(dbPath)) {
         archive.file(dbPath, { name: 'arcanedeck.db' })
       }
@@ -78,14 +78,15 @@ export class BackupService {
 
     return new Promise((resolve, reject) => {
       fs.createReadStream(backupPath)
-        .pipe(extract({ path: tempDir }))
+        .pipe(unzipper.Extract({ path: tempDir }))
         .on('close', async () => {
           try {
+            const prisma = await getPrisma()
             await prisma.$disconnect()
 
             const restoredDbPath = path.join(tempDir, 'arcanedeck.db')
             if (fs.existsSync(restoredDbPath)) {
-              const currentDbPath = path.join(userDataPath, 'arcanedeck.db')
+              const currentDbPath = path.join(userDataPath, 'data', 'arcanedeck.db')
               if (fs.existsSync(currentDbPath)) {
                 fs.renameSync(currentDbPath, `${currentDbPath}.bak`)
               }

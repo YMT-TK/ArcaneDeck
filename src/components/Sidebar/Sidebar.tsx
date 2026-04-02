@@ -17,7 +17,7 @@ import './Sidebar.css'
  */
 interface NavItem {
   id: string
-  icon: React.ComponentType<{ size?: number }>
+  icon: React.ComponentType<any>
   label: string
   type?: 'note' | 'doc' | 'link' | 'image'
 }

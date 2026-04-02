@@ -1,7 +1,7 @@
 import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { CardService, TabService, BackupService, DatabaseService, AttachmentService } from './services'
+import { CardService, TabService, BackupService, DatabaseService, AttachmentService, setCustomDataPath, initDatabase } from './services'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -48,6 +48,12 @@ function createWindow(): void {
     shell.openExternal(url)
     return { action: 'deny' }
   })
+
+  mainWindow.webContents.on('before-input-event', (_event, input) => {
+    if (input.key === 'F12' || (input.control && input.shift && input.key.toLowerCase() === 'i')) {
+      mainWindow?.webContents.toggleDevTools()
+    }
+  })
 }
 
 const gotTheLock = app.requestSingleInstanceLock()
@@ -64,7 +70,13 @@ if (!gotTheLock) {
     }
   })
 
-  app.whenReady().then(() => {
+  app.whenReady().then(async () => {
+    try {
+      await initDatabase()
+      console.log('[Main] Database initialized successfully')
+    } catch (error) {
+      console.error('[Main] Failed to initialize database:', error)
+    }
     createWindow()
     registerIpcHandlers()
 
@@ -132,8 +144,26 @@ function registerIpcHandlers() {
     return DatabaseService.getStats()
   })
 
+  ipcMain.handle('database:getPath', async () => {
+    return DatabaseService.getDatabasePath()
+  })
+
+  ipcMain.handle('database:setPath', async (_event, customPath: string) => {
+    try {
+      const success = setCustomDataPath(customPath)
+      return { success }
+    } catch (error) {
+      return { success: false, error: String(error) }
+    }
+  })
+
   ipcMain.handle('card:create', async (_event, data) => {
-    return CardService.create(data)
+    try {
+      return await CardService.create(data)
+    } catch (error) {
+      console.error('[CardService] Create failed:', error)
+      throw error
+    }
   })
 
   ipcMain.handle('card:update', async (_event, id: string, data) => {
@@ -150,6 +180,14 @@ function registerIpcHandlers() {
 
   ipcMain.handle('card:getAll', async (_event, tabId?: string) => {
     return CardService.getAll(tabId)
+  })
+
+  ipcMain.handle('card:getByType', async (_event, type: string) => {
+    return CardService.getByType(type as 'note' | 'doc' | 'link' | 'image')
+  })
+
+  ipcMain.handle('card:togglePin', async (_event, id: string) => {
+    return CardService.togglePin(id)
   })
 
   ipcMain.handle('card:getById', async (_event, id: string) => {

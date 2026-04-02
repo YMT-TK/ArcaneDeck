@@ -12,7 +12,7 @@ interface ThemeOption {
   id: 'scifi' | 'magic' | 'minimal'
   label: string
   description: string
-  icon: React.ComponentType<{ size?: number }>
+  icon: React.ComponentType<any>
   previewBg: string
   previewText?: string
 }
@@ -27,8 +27,7 @@ function Settings() {
     textFontSize: savedTextFontSize, 
     setTextFontSize: saveTextFontSize, 
     backupPath: savedBackupPath, 
-    setBackupPath: saveBackupPath,
-    resetConfig 
+    setBackupPath: saveBackupPath
   } = useConfigStore()
   const { theme: currentTheme, setTheme: applyTheme } = useTheme()
 

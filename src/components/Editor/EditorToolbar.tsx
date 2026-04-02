@@ -172,9 +172,9 @@ function EditorToolbar({ editor, onSave }: EditorToolbarProps) {
             <button
               key={index}
               onClick={item.action}
-              disabled={item.disabled}
+              disabled={(item as any).disabled}
               title={item.title}
-              className={`toolbar-button ${item.active ? 'active' : ''} ${item.disabled ? 'disabled' : ''}`}
+              className={`toolbar-button ${(item as any).active ? 'active' : ''} ${(item as any).disabled ? 'disabled' : ''}`}
             >
               <item.icon size={18} />
             </button>

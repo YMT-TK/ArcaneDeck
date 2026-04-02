@@ -1,8 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-type CardType = 'note' | 'doc' | 'link' | 'image'
-
 interface SidebarStore {
   activeNavId: string
   showRecycleBin: boolean

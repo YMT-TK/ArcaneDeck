@@ -1,0 +1,54 @@
+{
+  "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
+  "appId": "com.arcanedeck.dev",
+  "productName": "ArcaneDeck (Dev)",
+  "directories": {
+    "output": "release/dev-${version}"
+  },
+  "files": [
+    "dist/**/*",
+    "dist-electron/**/*",
+    {
+      "from": "node_modules",
+      "to": "node_modules",
+      "filter": ["**/*"]
+    }
+  ],
+  "asar": false,
+  "extraResources": [
+    {
+      "from": "node_modules/.prisma",
+      "to": "node_modules/.prisma"
+    },
+    {
+      "from": "node_modules/@prisma",
+      "to": "node_modules/@prisma"
+    }
+  ],
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": ["x64"]
+      }
+    ],
+    "icon": "public/logo.ico"
+  },
+  "nsis": {
+    "oneClick": false,
+    "perMachine": false,
+    "allowToChangeInstallationDirectory": true,
+    "deleteAppDataOnUninstall": false,
+    "installerIcon": "public/logo.ico",
+    "uninstallerIcon": "public/logo.ico",
+    "installerHeaderIcon": "public/logo.ico"
+  },
+  "mac": {
+    "target": ["dmg"],
+    "icon": "public/logo.ico"
+  },
+  "linux": {
+    "target": ["AppImage"],
+    "icon": "public/logo.ico"
+  }
+}

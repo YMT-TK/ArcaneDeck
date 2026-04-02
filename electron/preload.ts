@@ -1,17 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 
 /**
- * IPC 通道类型定义
- */
-export interface IpcChannels {
-  'app:getVersion': () => Promise<string>
-  'app:getPath': (name: string) => Promise<string>
-  'dialog:openFile': (options: Electron.OpenDialogOptions) => Promise<Electron.OpenDialogReturnValue>
-  'dialog:saveFile': (options: Electron.SaveDialogOptions) => Promise<Electron.SaveDialogReturnValue>
-  'dialog:showMessage': (options: Electron.MessageBoxOptions) => Promise<Electron.MessageBoxReturnValue>
-}
-
-/**
  * 暴露给渲染进程的 API
  */
 const electronAPI = {
@@ -20,11 +9,11 @@ const electronAPI = {
     getPath: (name: string) => ipcRenderer.invoke('app:getPath', name),
   },
   dialog: {
-    openFile: (options: Electron.OpenDialogOptions) => 
+    openFile: (options: any) => 
       ipcRenderer.invoke('dialog:openFile', options),
-    saveFile: (options: Electron.SaveDialogOptions) => 
+    saveFile: (options: any) => 
       ipcRenderer.invoke('dialog:saveFile', options),
-    showMessage: (options: Electron.MessageBoxOptions) => 
+    showMessage: (options: any) => 
       ipcRenderer.invoke('dialog:showMessage', options),
     selectFolder: () => 
       ipcRenderer.invoke('dialog:selectFolder'),
@@ -39,6 +28,8 @@ const electronAPI = {
     restore: (filePath: string) => ipcRenderer.invoke('database:restore', filePath),
     checkIntegrity: () => ipcRenderer.invoke('database:checkIntegrity'),
     getStats: () => ipcRenderer.invoke('database:getStats'),
+    getPath: () => ipcRenderer.invoke('database:getPath'),
+    setPath: (customPath: string) => ipcRenderer.invoke('database:setPath', customPath),
   },
   card: {
     create: (data: unknown) => ipcRenderer.invoke('card:create', data),
@@ -46,9 +37,11 @@ const electronAPI = {
     delete: (id: string) => ipcRenderer.invoke('card:delete', id),
     restore: (id: string) => ipcRenderer.invoke('card:restore', id),
     getAll: (tabId?: string) => ipcRenderer.invoke('card:getAll', tabId),
+    getByType: (type: string) => ipcRenderer.invoke('card:getByType', type),
     getById: (id: string) => ipcRenderer.invoke('card:getById', id),
     search: (query: string) => ipcRenderer.invoke('card:search', query),
     reorder: (ids: string[]) => ipcRenderer.invoke('card:reorder', ids),
+    togglePin: (id: string) => ipcRenderer.invoke('card:togglePin', id),
   },
   tab: {
     create: (name: string) => ipcRenderer.invoke('tab:create', name),
@@ -82,12 +75,3 @@ const electronAPI = {
  * 使用 contextBridge 暴露 API 到渲染进程
  */
 contextBridge.exposeInMainWorld('electronAPI', electronAPI)
-
-/**
- * 类型声明 - 暴露到 window 对象
- */
-declare global {
-  interface Window {
-    electronAPI: typeof electronAPI
-  }
-}

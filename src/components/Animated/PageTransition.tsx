@@ -99,7 +99,7 @@ export function DraggableCard({
   onDragEnd
 }: { 
   children: ReactNode
-  onDragEnd?: (event: MouseEvent | TouchEvent | PointerEvent, info: { x: number; y: number }) => void
+  onDragEnd?: (event: MouseEvent | TouchEvent | PointerEvent, info: any) => void
 }) {
   return (
     <motion.div

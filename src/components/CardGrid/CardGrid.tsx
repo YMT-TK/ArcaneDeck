@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, LayoutGrid, Columns, RefreshCw } from 'lucide-react'
 import { Card } from '../Card'
@@ -22,6 +23,7 @@ interface CardData {
   status: CardStatus
   tabId: string | null
   position: number
+  pinned: boolean
   styleConfig: string | null
   url?: string
   imagePath?: string
@@ -65,6 +67,7 @@ function CardGrid() {
     updateCard,
     deleteCard,
     restoreCard,
+    toggleCardPin,
     setLoading,
   } = useCardStore()
 
@@ -81,7 +84,7 @@ function CardGrid() {
     setLoading(true)
     try {
       let cardList: CardData[] = await window.electronAPI.card.getAll()
-      
+
       if (showRecycleBin) {
         cardList = cardList.filter((c: CardData) => c.status === 'deleted')
       } else {
@@ -118,7 +121,7 @@ function CardGrid() {
    */
   const handleAddCard = () => {
     const cardType = getCurrentCardType()
-    
+
     if (cardType === 'link') {
       setShowLinkEditor(true)
     } else if (cardType === 'image') {
@@ -223,12 +226,24 @@ function CardGrid() {
   }
 
   /**
+   * 置顶/取消置顶卡片
+   */
+  const handleTogglePin = async (id: string) => {
+    try {
+      const updatedCard = await window.electronAPI.card.togglePin(id)
+      toggleCardPin(id, updatedCard.pinned)
+    } catch (error) {
+      console.error('Failed to toggle pin:', error)
+    }
+  }
+
+  /**
    * 根据视图模式分组卡片
    */
   const getGroupedCards = () => {
     if (viewMode === 'auto') {
-      const masonryCards = cards.filter((c) => getCardLayout(c.type) === 'masonry')
-      const gridCards = cards.filter((c) => getCardLayout(c.type) === 'grid')
+      const masonryCards = cards.filter(c => getCardLayout(c.type) === 'masonry')
+      const gridCards = cards.filter(c => getCardLayout(c.type) === 'grid')
       return { masonryCards, gridCards }
     }
     return { masonryCards: cards, gridCards: [] }
@@ -246,11 +261,7 @@ function CardGrid() {
           <span className="card-count">{cards.length} 张卡片</span>
         </div>
         <div className="toolbar-right">
-          <button
-            className="toolbar-button"
-            onClick={loadCards}
-            title="刷新"
-          >
+          <button className="toolbar-button" onClick={loadCards} title="刷新">
             <RefreshCw size={16} />
           </button>
           <div className="view-mode-toggle">
@@ -277,12 +288,20 @@ function CardGrid() {
             </button>
           </div>
           {!showRecycleBin && (
-            <button
-              className="add-card-button"
-              onClick={handleAddCard}
-            >
+            <button className="add-card-button" onClick={handleAddCard}>
               <Plus size={16} />
-              <span>添加{getCurrentCardType() === 'note' ? '便签' : getCurrentCardType() === 'doc' ? '笔记' : getCurrentCardType() === 'link' ? '链接' : getCurrentCardType() === 'image' ? '图文' : '卡片'}</span>
+              <span>
+                添加
+                {getCurrentCardType() === 'note'
+                  ? '便签'
+                  : getCurrentCardType() === 'doc'
+                    ? '笔记'
+                    : getCurrentCardType() === 'link'
+                      ? '链接'
+                      : getCurrentCardType() === 'image'
+                        ? '图文'
+                        : '卡片'}
+              </span>
             </button>
           )}
         </div>
@@ -296,14 +315,10 @@ function CardGrid() {
           </div>
         ) : cards.length === 0 ? (
           <div className="empty-state">
-            <div className="empty-icon">
-              {showRecycleBin ? '🗑️' : '📝'}
-            </div>
+            <div className="empty-icon">{showRecycleBin ? '🗑️' : '📝'}</div>
             <h3>{showRecycleBin ? '回收站为空' : '暂无卡片'}</h3>
             <p>
-              {showRecycleBin
-                ? '删除的卡片将在这里显示'
-                : '点击上方"添加卡片"按钮创建第一张卡片'}
+              {showRecycleBin ? '删除的卡片将在这里显示' : '点击上方"添加卡片"按钮创建第一张卡片'}
             </p>
             {!showRecycleBin && (
               <button className="empty-add-button" onClick={handleAddCard}>
@@ -319,7 +334,7 @@ function CardGrid() {
                 <div className="section-label">便签 & 图文</div>
                 <div className="masonry-grid">
                   <AnimatePresence mode="popLayout">
-                    {masonryCards.map((card) => (
+                    {masonryCards.map(card => (
                       <Card
                         key={card.id}
                         id={card.id}
@@ -327,6 +342,7 @@ function CardGrid() {
                         content={card.content}
                         type={card.type}
                         status={card.status}
+                        pinned={card.pinned}
                         url={card.url}
                         imagePath={card.imagePath}
                         favicon={card.favicon}
@@ -335,6 +351,7 @@ function CardGrid() {
                         onEdit={handleUpdateCard}
                         onDelete={handleDeleteCard}
                         onRestore={handleRestoreCard}
+                        onPin={handleTogglePin}
                         onClick={() => console.log('Card clicked:', card.id)}
                       />
                     ))}
@@ -347,7 +364,7 @@ function CardGrid() {
                 <div className="section-label">笔记 & 网址</div>
                 <div className="uniform-grid">
                   <AnimatePresence mode="popLayout">
-                    {gridCards.map((card) => (
+                    {gridCards.map(card => (
                       <Card
                         key={card.id}
                         id={card.id}
@@ -355,6 +372,7 @@ function CardGrid() {
                         content={card.content}
                         type={card.type}
                         status={card.status}
+                        pinned={card.pinned}
                         url={card.url}
                         imagePath={card.imagePath}
                         favicon={card.favicon}
@@ -363,6 +381,7 @@ function CardGrid() {
                         onEdit={handleUpdateCard}
                         onDelete={handleDeleteCard}
                         onRestore={handleRestoreCard}
+                        onPin={handleTogglePin}
                         onClick={() => console.log('Card clicked:', card.id)}
                       />
                     ))}
@@ -374,7 +393,7 @@ function CardGrid() {
         ) : (
           <div className={viewMode === 'masonry' ? 'masonry-grid' : 'uniform-grid'}>
             <AnimatePresence mode="popLayout">
-              {cards.map((card) => (
+              {cards.map(card => (
                 <Card
                   key={card.id}
                   id={card.id}
@@ -382,6 +401,7 @@ function CardGrid() {
                   content={card.content}
                   type={card.type}
                   status={card.status}
+                  pinned={card.pinned}
                   url={card.url}
                   imagePath={card.imagePath}
                   favicon={card.favicon}
@@ -390,6 +410,7 @@ function CardGrid() {
                   onEdit={handleUpdateCard}
                   onDelete={handleDeleteCard}
                   onRestore={handleRestoreCard}
+                  onPin={handleTogglePin}
                   onClick={() => console.log('Card clicked:', card.id)}
                 />
               ))}
@@ -398,51 +419,57 @@ function CardGrid() {
         )}
       </div>
 
-      <AnimatePresence>
-        {showLinkEditor && (
-          <motion.div
-            className="editor-overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
+      {createPortal(
+        <AnimatePresence>
+          {showLinkEditor && (
             <motion.div
-              className="editor-modal"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
+              className="editor-overlay"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
             >
-              <LinkCardEditor
-                onSave={handleCreateLinkCard}
-                onCancel={() => setShowLinkEditor(false)}
-              />
+              <motion.div
+                className="editor-modal"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+              >
+                <LinkCardEditor
+                  onSave={handleCreateLinkCard}
+                  onCancel={() => setShowLinkEditor(false)}
+                />
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
 
-      <AnimatePresence>
-        {showImageEditor && (
-          <motion.div
-            className="editor-overlay"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
+      {createPortal(
+        <AnimatePresence>
+          {showImageEditor && (
             <motion.div
-              className="editor-modal"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
+              className="editor-overlay"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
             >
-              <ImageCardEditor
-                onSave={handleCreateImageCard}
-                onCancel={() => setShowImageEditor(false)}
-              />
+              <motion.div
+                className="editor-modal"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+              >
+                <ImageCardEditor
+                  onSave={handleCreateImageCard}
+                  onCancel={() => setShowImageEditor(false)}
+                />
+              </motion.div>
             </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
     </div>
   )
 }

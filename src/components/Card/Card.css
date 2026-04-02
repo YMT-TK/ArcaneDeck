@@ -21,6 +21,44 @@
   border-style: dashed;
 }
 
+.card-pinned {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 12px rgba(var(--color-primary-rgb, 99, 102, 241), 0.3);
+}
+
+.card-pin-indicator {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+  color: #374151;
+}
+
+.card-image-pin-indicator {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  color: white;
+}
+
+.card-title-pin {
+  margin-right: 4px;
+  color: var(--color-primary);
+}
+
 .card-header {
   display: flex;
   align-items: center;
@@ -318,6 +356,36 @@
 .note-edit-btn:hover {
   background: rgba(0, 0, 0, 0.1);
   color: #374151;
+}
+
+.note-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.note-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.05);
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.note-action-btn:hover {
+  background: rgba(0, 0, 0, 0.15);
+  color: #374151;
+}
+
+.note-action-btn.delete:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #dc2626;
 }
 
 /* 便签颜色 */

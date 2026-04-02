@@ -1,4 +1,4 @@
-import prisma from './database'
+import { getPrisma } from './database'
 import { Card } from '@prisma/client'
 import validator from 'validator'
 
@@ -44,6 +44,7 @@ export interface UpdateCardInput {
   url?: string
   imagePath?: string
   favicon?: string
+  pinned?: boolean
 }
 
 /**
@@ -55,6 +56,7 @@ export class CardService {
    * 创建新卡片
    */
   static async create(data: CreateCardInput): Promise<Card> {
+    const prisma = await getPrisma()
     const sanitizedTitle = this.sanitizeInput(data.title)
     const sanitizedContent = this.sanitizeInput(data.content)
 
@@ -84,6 +86,7 @@ export class CardService {
    * 更新卡片
    */
   static async update(id: string, data: UpdateCardInput): Promise<Card> {
+    const prisma = await getPrisma()
     const updateData: UpdateCardInput = { ...data }
 
     if (data.title) {
@@ -103,6 +106,7 @@ export class CardService {
    * 软删除卡片
    */
   static async softDelete(id: string): Promise<Card> {
+    const prisma = await getPrisma()
     return prisma.card.update({
       where: { id },
       data: {
@@ -116,6 +120,7 @@ export class CardService {
    * 恢复已删除的卡片
    */
   static async restore(id: string): Promise<Card> {
+    const prisma = await getPrisma()
     return prisma.card.update({
       where: { id },
       data: {
@@ -129,6 +134,7 @@ export class CardService {
    * 永久删除卡片
    */
   static async permanentDelete(id: string): Promise<void> {
+    const prisma = await getPrisma()
     await prisma.card.delete({
       where: { id },
     })
@@ -138,12 +144,33 @@ export class CardService {
    * 获取所有活跃卡片
    */
   static async getAll(tabId?: string): Promise<Card[]> {
+    const prisma = await getPrisma()
     return prisma.card.findMany({
       where: {
         status: 'active',
         tabId: tabId ?? null,
       },
-      orderBy: { position: 'asc' },
+      orderBy: [
+        { pinned: 'desc' },
+        { position: 'asc' },
+      ],
+    })
+  }
+
+  /**
+   * 根据类型获取卡片
+   */
+  static async getByType(type: CardType): Promise<Card[]> {
+    const prisma = await getPrisma()
+    return prisma.card.findMany({
+      where: {
+        status: 'active',
+        type,
+      },
+      orderBy: [
+        { pinned: 'desc' },
+        { position: 'asc' },
+      ],
     })
   }
 
@@ -151,6 +178,7 @@ export class CardService {
    * 获取已删除的卡片
    */
   static async getDeleted(): Promise<Card[]> {
+    const prisma = await getPrisma()
     return prisma.card.findMany({
       where: { status: 'deleted' },
       orderBy: { deletedAt: 'desc' },
@@ -161,6 +189,7 @@ export class CardService {
    * 根据ID获取卡片
    */
   static async getById(id: string): Promise<Card | null> {
+    const prisma = await getPrisma()
     return prisma.card.findUnique({
       where: { id },
       include: { attachments: true },
@@ -171,6 +200,7 @@ export class CardService {
    * 搜索卡片
    */
   static async search(query: string): Promise<Card[]> {
+    const prisma = await getPrisma()
     const sanitizedQuery = this.sanitizeInput(query)
     
     return prisma.card.findMany({
@@ -181,7 +211,10 @@ export class CardService {
           { content: { contains: sanitizedQuery } },
         ],
       },
-      orderBy: { updatedAt: 'desc' },
+      orderBy: [
+        { pinned: 'desc' },
+        { updatedAt: 'desc' },
+      ],
       take: 50,
     })
   }
@@ -190,6 +223,7 @@ export class CardService {
    * 更新卡片位置
    */
   static async reorder(cardIds: string[]): Promise<void> {
+    const prisma = await getPrisma()
     const updates = cardIds.map((id, index) =>
       prisma.card.update({
         where: { id },
@@ -201,9 +235,30 @@ export class CardService {
   }
 
   /**
+   * 置顶/取消置顶卡片
+   */
+  static async togglePin(id: string): Promise<Card> {
+    const prisma = await getPrisma()
+    const card = await prisma.card.findUnique({
+      where: { id },
+      select: { pinned: true },
+    })
+
+    if (!card) {
+      throw new Error('Card not found')
+    }
+
+    return prisma.card.update({
+      where: { id },
+      data: { pinned: !card.pinned },
+    })
+  }
+
+  /**
    * 归档卡片
    */
   static async archive(id: string): Promise<Card> {
+    const prisma = await getPrisma()
     return prisma.card.update({
       where: { id },
       data: { status: 'archived' },
@@ -214,6 +269,7 @@ export class CardService {
    * 清理过期删除的卡片（超过30天）
    */
   static async cleanupDeleted(): Promise<number> {
+    const prisma = await getPrisma()
     const thirtyDaysAgo = new Date()
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
 

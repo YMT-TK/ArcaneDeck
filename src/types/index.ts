@@ -1,5 +1,3 @@
-import { Electron } from 'electron'
-
 /**
  * Electron API 类型定义
  */
@@ -9,9 +7,10 @@ export interface ElectronAPI {
     getPath: (name: string) => Promise<string>
   }
   dialog: {
-    openFile: (options: Electron.OpenDialogOptions) => Promise<Electron.OpenDialogReturnValue>
-    saveFile: (options: Electron.SaveDialogOptions) => Promise<Electron.SaveDialogReturnValue>
-    showMessage: (options: Electron.MessageBoxOptions) => Promise<Electron.MessageBoxReturnValue>
+    openFile: (options: any) => Promise<any>
+    saveFile: (options: any) => Promise<any>
+    showMessage: (options: any) => Promise<any>
+    selectFolder: () => Promise<any>
   }
   store: {
     get: (key: string) => Promise<unknown>
@@ -30,6 +29,7 @@ export interface ElectronAPI {
     restore: (id: string) => Promise<Card>
     getAll: (tabId?: string) => Promise<Card[]>
     search: (query: string) => Promise<Card[]>
+    togglePin: (id: string) => Promise<Card>
   }
   tab: {
     create: (name: string) => Promise<Tab>
@@ -77,6 +77,7 @@ export interface Card {
   status: CardStatus
   tabId: string | null
   position: number
+  pinned: boolean
   styleConfig: string | null
   url?: string
   imagePath?: string
