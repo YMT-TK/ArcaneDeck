@@ -64,7 +64,6 @@ function CardGrid() {
     isLoading,
     setCards,
     addCard,
-    updateCard,
     deleteCard,
     restoreCard,
     toggleCardPin,
@@ -76,6 +75,7 @@ function CardGrid() {
   const [viewMode, setViewMode] = useState<ViewMode>('auto')
   const [showLinkEditor, setShowLinkEditor] = useState(false)
   const [showImageEditor, setShowImageEditor] = useState(false)
+  const [deleteConfirmCardId, setDeleteConfirmCardId] = useState<string | null>(null)
 
   /**
    * 加载卡片列表
@@ -190,27 +190,32 @@ function CardGrid() {
   }
 
   /**
-   * 更新卡片
+   * 删除卡片（软删除）
    */
-  const handleUpdateCard = async (id: string, data: { title: string; content: string }) => {
+  const handleDeleteCard = (id: string) => {
+    setDeleteConfirmCardId(id)
+  }
+
+  /**
+   * 确认删除卡片
+   */
+  const confirmDeleteCard = async () => {
+    if (!deleteConfirmCardId) return
     try {
-      await window.electronAPI.card.update(id, data)
-      updateCard(id, data)
+      await window.electronAPI.card.delete(deleteConfirmCardId)
+      deleteCard(deleteConfirmCardId)
     } catch (error) {
-      console.error('Failed to update card:', error)
+      console.error('Failed to delete card:', error)
+    } finally {
+      setDeleteConfirmCardId(null)
     }
   }
 
   /**
-   * 删除卡片（软删除）
+   * 取消删除
    */
-  const handleDeleteCard = async (id: string) => {
-    try {
-      await window.electronAPI.card.delete(id)
-      deleteCard(id)
-    } catch (error) {
-      console.error('Failed to delete card:', error)
-    }
+  const cancelDelete = () => {
+    setDeleteConfirmCardId(null)
   }
 
   /**
@@ -238,15 +243,22 @@ function CardGrid() {
   }
 
   /**
-   * 根据视图模式分组卡片
+   * 根据视图模式分组卡片，置顶卡片排在顶部
    */
   const getGroupedCards = () => {
+    const sortedCards = [...cards].sort((a, b) => {
+      if (a.pinned !== b.pinned) {
+        return b.pinned ? 1 : -1
+      }
+      return a.position - b.position
+    })
+
     if (viewMode === 'auto') {
-      const masonryCards = cards.filter(c => getCardLayout(c.type) === 'masonry')
-      const gridCards = cards.filter(c => getCardLayout(c.type) === 'grid')
+      const masonryCards = sortedCards.filter(c => getCardLayout(c.type) === 'masonry')
+      const gridCards = sortedCards.filter(c => getCardLayout(c.type) === 'grid')
       return { masonryCards, gridCards }
     }
-    return { masonryCards: cards, gridCards: [] }
+    return { masonryCards: sortedCards, gridCards: [] }
   }
 
   const { masonryCards, gridCards } = getGroupedCards()
@@ -348,7 +360,6 @@ function CardGrid() {
                         favicon={card.favicon}
                         createdAt={card.createdAt}
                         updatedAt={card.updatedAt}
-                        onEdit={handleUpdateCard}
                         onDelete={handleDeleteCard}
                         onRestore={handleRestoreCard}
                         onPin={handleTogglePin}
@@ -378,7 +389,6 @@ function CardGrid() {
                         favicon={card.favicon}
                         createdAt={card.createdAt}
                         updatedAt={card.updatedAt}
-                        onEdit={handleUpdateCard}
                         onDelete={handleDeleteCard}
                         onRestore={handleRestoreCard}
                         onPin={handleTogglePin}
@@ -407,7 +417,6 @@ function CardGrid() {
                   favicon={card.favicon}
                   createdAt={card.createdAt}
                   updatedAt={card.updatedAt}
-                  onEdit={handleUpdateCard}
                   onDelete={handleDeleteCard}
                   onRestore={handleRestoreCard}
                   onPin={handleTogglePin}
@@ -464,6 +473,44 @@ function CardGrid() {
                   onSave={handleCreateImageCard}
                   onCancel={() => setShowImageEditor(false)}
                 />
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
+
+      {createPortal(
+        <AnimatePresence>
+          {deleteConfirmCardId && (
+            <motion.div
+              className="editor-overlay"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={cancelDelete}
+            >
+              <motion.div
+                className="editor-modal"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                onClick={e => e.stopPropagation()}
+              >
+                <div className="delete-confirm-dialog">
+                  <h3 className="delete-confirm-title">确认删除</h3>
+                  <p className="delete-confirm-message">
+                    确定要删除这张卡片吗？此操作可以在回收站中恢复。
+                  </p>
+                  <div className="delete-confirm-actions">
+                    <button className="delete-confirm-btn cancel" onClick={cancelDelete}>
+                      取消
+                    </button>
+                    <button className="delete-confirm-btn confirm" onClick={confirmDeleteCard}>
+                      确认删除
+                    </button>
+                  </div>
+                </div>
               </motion.div>
             </motion.div>
           )}
