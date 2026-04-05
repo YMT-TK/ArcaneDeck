@@ -7,6 +7,7 @@ import { LinkCardEditor } from '../LinkCardEditor'
 import { ImageCardEditor } from '../ImageCardEditor'
 import { useCardStore } from '../../stores/cardStore'
 import { useSidebarStore } from '../../stores/sidebarStore'
+import { useEditModalStore } from '../../stores'
 import './CardGrid.css'
 
 type ViewMode = 'grid' | 'masonry' | 'auto'
@@ -71,11 +72,19 @@ function CardGrid() {
   } = useCardStore()
 
   const { activeNavId, showRecycleBin } = useSidebarStore()
+  const { openEditModal } = useEditModalStore()
 
   const [viewMode, setViewMode] = useState<ViewMode>('auto')
   const [showLinkEditor, setShowLinkEditor] = useState(false)
   const [showImageEditor, setShowImageEditor] = useState(false)
   const [deleteConfirmCardId, setDeleteConfirmCardId] = useState<string | null>(null)
+
+  /**
+   * 处理卡片点击事件
+   */
+  const handleCardClick = (cardId: string, cardType: CardType) => {
+    openEditModal(cardId, cardType)
+  }
 
   /**
    * 加载卡片列表
@@ -363,7 +372,7 @@ function CardGrid() {
                         onDelete={handleDeleteCard}
                         onRestore={handleRestoreCard}
                         onPin={handleTogglePin}
-                        onClick={() => console.log('Card clicked:', card.id)}
+                        onClick={(id) => handleCardClick(id, card.type)}
                       />
                     ))}
                   </AnimatePresence>
@@ -392,7 +401,7 @@ function CardGrid() {
                         onDelete={handleDeleteCard}
                         onRestore={handleRestoreCard}
                         onPin={handleTogglePin}
-                        onClick={() => console.log('Card clicked:', card.id)}
+                        onClick={(id) => handleCardClick(id, card.type)}
                       />
                     ))}
                   </AnimatePresence>

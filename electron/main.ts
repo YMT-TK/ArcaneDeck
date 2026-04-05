@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, dialog, shell } from 'electron'
+import { app, BrowserWindow, ipcMain, dialog, shell, Menu } from 'electron'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { CardService, TabService, BackupService, DatabaseService, AttachmentService, setCustomDataPath, initDatabase } from './services'
@@ -26,8 +26,11 @@ function createWindow(): void {
     },
     frame: true,
     titleBarStyle: 'default',
+    autoHideMenuBar: true,
     show: false,
   })
+
+  Menu.setApplicationMenu(null)
 
   mainWindow.once('ready-to-show', () => {
     mainWindow?.show()

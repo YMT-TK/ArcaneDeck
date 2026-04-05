@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { ThemeProvider } from './contexts/ThemeContext'
 import MainLayout from './components/Layout/MainLayout'
+import EditModal from './components/EditModal/EditModal'
 import { useConfigStore } from './stores'
 import './styles/globals.css'
 
@@ -52,6 +53,7 @@ function App() {
   return (
     <ThemeProvider>
       <MainLayout />
+      <EditModal />
     </ThemeProvider>
   )
 }
