@@ -2,6 +2,8 @@ import { app } from 'electron'
 import * as path from 'path'
 import * as fs from 'fs'
 import { v4 as uuidv4 } from 'uuid'
+import * as https from 'https'
+import * as http from 'http'
 
 /**
  * 附件服务
@@ -65,6 +67,87 @@ export class AttachmentService {
 
     await fs.promises.writeFile(destPath, buffer)
     return { path: destPath }
+  }
+
+  /**
+   * 下载图片并保存
+   */
+  static async downloadAndSaveImage(url: string): Promise<{ path: string }> {
+    this.init()
+
+    const buffer = await this.downloadImage(url)
+    const ext = this.getImageExtension(url) || 'png'
+    const fileName = `${uuidv4()}.${ext}`
+    const destPath = path.join(this.attachmentsDir, fileName)
+
+    await fs.promises.writeFile(destPath, buffer)
+    return { path: destPath }
+  }
+
+  /**
+   * 下载图片
+   */
+  private static async downloadImage(url: string): Promise<Buffer> {
+    return new Promise((resolve, reject) => {
+      const client = url.startsWith('https') ? https : http
+      client.get(url, (response) => {
+        if (response.statusCode === 301 || response.statusCode === 302 || response.statusCode === 303 || response.statusCode === 307 || response.statusCode === 308) {
+          if (response.headers.location) {
+            this.downloadImage(response.headers.location).then(resolve).catch(reject)
+            return
+          }
+        }
+        if (response.statusCode !== 200) {
+          reject(new Error(`Failed to download image: ${response.statusCode}`))
+          return
+        }
+
+        const chunks: Buffer[] = []
+        response.on('data', (chunk) => chunks.push(chunk))
+        response.on('end', () => resolve(Buffer.concat(chunks)))
+        response.on('error', reject)
+      }).on('error', reject)
+    })
+  }
+
+  /**
+   * 获取图片扩展名
+   */
+  private static getImageExtension(url: string): string | null {
+    const urlObj = new URL(url)
+    const pathname = urlObj.pathname.toLowerCase()
+    if (pathname.endsWith('.png')) return 'png'
+    if (pathname.endsWith('.jpg') || pathname.endsWith('.jpeg')) return 'jpg'
+    if (pathname.endsWith('.gif')) return 'gif'
+    if (pathname.endsWith('.svg')) return 'svg'
+    if (pathname.endsWith('.ico')) return 'ico'
+    return null
+  }
+
+  /**
+   * 获取网站favicon
+   */
+  static async fetchAndSaveFavicon(url: string): Promise<{ path: string }> {
+    const urlObj = new URL(url.startsWith('http') ? url : `https://${url}`)
+    const hostname = urlObj.hostname
+
+    const faviconUrls = [
+      `https://www.google.com/s2/favicons?domain=${hostname}&sz=128`,
+      `https://${hostname}/favicon.ico`,
+      `https://${hostname}/favicon.png`,
+      `https://${hostname}/apple-touch-icon.png`,
+    ]
+
+    for (const faviconUrl of faviconUrls) {
+      try {
+        return await this.downloadAndSaveImage(faviconUrl)
+      } catch (error) {
+        console.log(`Failed to fetch favicon from ${faviconUrl}:`, error)
+        continue
+      }
+    }
+
+    throw new Error('Failed to fetch favicon from all sources')
   }
 
   /**

@@ -61,6 +61,8 @@ const electronAPI = {
       ipcRenderer.invoke('attachment:saveImage', file),
     saveBase64: (base64Data: string) => 
       ipcRenderer.invoke('attachment:saveBase64', base64Data),
+    fetchFavicon: (url: string) => 
+      ipcRenderer.invoke('attachment:fetchFavicon', url),
     delete: (filePath: string) => 
       ipcRenderer.invoke('attachment:delete', filePath),
   },

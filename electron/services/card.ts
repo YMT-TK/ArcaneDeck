@@ -1,6 +1,7 @@
 import { getPrisma } from './database'
 import { Card } from '@prisma/client'
 import validator from 'validator'
+import { AttachmentService } from './attachment'
 
 /**
  * 卡片类型
@@ -96,6 +97,15 @@ export class CardService {
       updateData.content = this.sanitizeInput(data.content)
     }
 
+    const oldCard = await prisma.card.findUnique({
+      where: { id },
+      select: { favicon: true },
+    })
+
+    if (oldCard && oldCard.favicon && data.favicon && oldCard.favicon !== data.favicon) {
+      await AttachmentService.deleteAttachment(oldCard.favicon)
+    }
+
     return prisma.card.update({
       where: { id },
       data: updateData,
@@ -107,6 +117,19 @@ export class CardService {
    */
   static async softDelete(id: string): Promise<Card> {
     const prisma = await getPrisma()
+    
+    const card = await prisma.card.findUnique({
+      where: { id },
+      select: { favicon: true, imagePath: true },
+    })
+
+    if (card && card.favicon) {
+      await AttachmentService.deleteAttachment(card.favicon)
+    }
+    if (card && card.imagePath) {
+      await AttachmentService.deleteAttachment(card.imagePath)
+    }
+
     return prisma.card.update({
       where: { id },
       data: {
@@ -272,6 +295,27 @@ export class CardService {
     const prisma = await getPrisma()
     const thirtyDaysAgo = new Date()
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+
+    const cardsToDelete = await prisma.card.findMany({
+      where: {
+        status: 'deleted',
+        deletedAt: { lt: thirtyDaysAgo },
+      },
+      select: {
+        id: true,
+        favicon: true,
+        imagePath: true,
+      },
+    })
+
+    for (const card of cardsToDelete) {
+      if (card.favicon) {
+        await AttachmentService.deleteAttachment(card.favicon)
+      }
+      if (card.imagePath) {
+        await AttachmentService.deleteAttachment(card.imagePath)
+      }
+    }
 
     const result = await prisma.card.deleteMany({
       where: {

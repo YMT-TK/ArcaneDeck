@@ -257,6 +257,10 @@ function registerIpcHandlers() {
     return AttachmentService.saveBase64Image(base64Data)
   })
 
+  ipcMain.handle('attachment:fetchFavicon', async (_event, url: string) => {
+    return AttachmentService.fetchAndSaveFavicon(url)
+  })
+
   ipcMain.handle('attachment:delete', async (_event, filePath: string) => {
     return AttachmentService.deleteAttachment(filePath)
   })

@@ -6,7 +6,8 @@ interface EditModalStore {
   isOpen: boolean
   cardId: string | null
   cardType: CardType | null
-  openEditModal: (cardId: string, cardType: CardType) => void
+  isNew: boolean
+  openEditModal: (cardId: string | null, cardType: CardType) => void
   closeEditModal: () => void
 }
 
@@ -18,8 +19,9 @@ export const useEditModalStore = create<EditModalStore>((set) => ({
   isOpen: false,
   cardId: null,
   cardType: null,
-  openEditModal: (cardId: string, cardType: CardType) => set({ 
-    isOpen: true, cardId, cardType }),
+  isNew: false,
+  openEditModal: (cardId: string | null, cardType: CardType) => set({ 
+    isOpen: true, cardId, cardType, isNew: cardId === null }),
   closeEditModal: () => set({ 
-    isOpen: false, cardId: null, cardType: null }),
+    isOpen: false, cardId: null, cardType: null, isNew: false }),
 }))

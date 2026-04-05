@@ -46,6 +46,7 @@ export interface ElectronAPI {
   attachment: {
     saveImage: (file: { path: string; name: string; type: string }) => Promise<{ path: string }>
     saveBase64: (base64Data: string) => Promise<{ path: string }>
+    fetchFavicon: (url: string) => Promise<{ path: string }>
     delete: (filePath: string) => Promise<void>
   }
 }

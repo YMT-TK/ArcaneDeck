@@ -3,7 +3,6 @@ import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, LayoutGrid, Columns, RefreshCw } from 'lucide-react'
 import { Card } from '../Card'
-import { LinkCardEditor } from '../LinkCardEditor'
 import { ImageCardEditor } from '../ImageCardEditor'
 import { useCardStore } from '../../stores/cardStore'
 import { useSidebarStore } from '../../stores/sidebarStore'
@@ -75,7 +74,6 @@ function CardGrid() {
   const { openEditModal } = useEditModalStore()
 
   const [viewMode, setViewMode] = useState<ViewMode>('auto')
-  const [showLinkEditor, setShowLinkEditor] = useState(false)
   const [showImageEditor, setShowImageEditor] = useState(false)
   const [deleteConfirmCardId, setDeleteConfirmCardId] = useState<string | null>(null)
 
@@ -132,7 +130,7 @@ function CardGrid() {
     const cardType = getCurrentCardType()
 
     if (cardType === 'link') {
-      setShowLinkEditor(true)
+      openEditModal(null, 'link')
     } else if (cardType === 'image') {
       setShowImageEditor(true)
     } else if (cardType) {
@@ -156,26 +154,6 @@ function CardGrid() {
       addCard(newCard)
     } catch (error) {
       console.error('Failed to create card:', error)
-    }
-  }
-
-  /**
-   * 创建链接卡片
-   */
-  const handleCreateLinkCard = async (data: { url: string; title: string; favicon?: string }) => {
-    try {
-      const newCard = await window.electronAPI.card.create({
-        title: data.title || new URL(data.url).hostname,
-        content: data.url,
-        type: 'link',
-        tabId: null,
-        url: data.url,
-        favicon: data.favicon,
-      })
-      addCard(newCard)
-      setShowLinkEditor(false)
-    } catch (error) {
-      console.error('Failed to create link card:', error)
     }
   }
 
@@ -372,7 +350,7 @@ function CardGrid() {
                         onDelete={handleDeleteCard}
                         onRestore={handleRestoreCard}
                         onPin={handleTogglePin}
-                        onClick={(id) => handleCardClick(id, card.type)}
+                        onClick={() => handleCardClick(card.id, card.type)}
                       />
                     ))}
                   </AnimatePresence>
@@ -401,7 +379,7 @@ function CardGrid() {
                         onDelete={handleDeleteCard}
                         onRestore={handleRestoreCard}
                         onPin={handleTogglePin}
-                        onClick={(id) => handleCardClick(id, card.type)}
+                        onClick={() => handleCardClick(card.id, card.type)}
                       />
                     ))}
                   </AnimatePresence>
@@ -429,39 +407,13 @@ function CardGrid() {
                   onDelete={handleDeleteCard}
                   onRestore={handleRestoreCard}
                   onPin={handleTogglePin}
-                  onClick={() => console.log('Card clicked:', card.id)}
+                  onClick={() => handleCardClick(card.id, card.type)}
                 />
               ))}
             </AnimatePresence>
           </div>
         )}
       </div>
-
-      {createPortal(
-        <AnimatePresence>
-          {showLinkEditor && (
-            <motion.div
-              className="editor-overlay"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            >
-              <motion.div
-                className="editor-modal"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-              >
-                <LinkCardEditor
-                  onSave={handleCreateLinkCard}
-                  onCancel={() => setShowLinkEditor(false)}
-                />
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>,
-        document.body
-      )}
 
       {createPortal(
         <AnimatePresence>

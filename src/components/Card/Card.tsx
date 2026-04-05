@@ -1,14 +1,11 @@
-import { useState, forwardRef } from 'react'
+import { forwardRef } from 'react'
 import { motion } from 'framer-motion'
 import {
   Link,
-  MoreVertical,
   Trash2,
-  RotateCcw,
   ExternalLink,
   Copy,
   Pin,
-  PinOff,
 } from 'lucide-react'
 import './Card.css'
 
@@ -44,7 +41,7 @@ interface CardProps {
   onDelete?: (id: string) => void
   onRestore?: (id: string) => void
   onPin?: (id: string) => void
-  onClick?: (id: string) => void
+  onClick?: () => void
 }
 
 /**
@@ -82,20 +79,20 @@ const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
     favicon,
     updatedAt,
     onDelete,
-    onRestore,
     onPin,
     onClick,
   },
   ref
 ) {
-  const [showMenu, setShowMenu] = useState(false)
-
   const handleCardClick = (e: React.MouseEvent) => {
     e.stopPropagation()
-    if (type === 'link' && url) {
+    onClick?.()
+  }
+
+  const handleOpenLink = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (url) {
       window.open(url, '_blank')
-    } else {
-      onClick?.(id)
     }
   }
 
@@ -194,7 +191,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
             }}
             title={pinned ? '取消置顶' : '置顶'}
           >
-            {pinned ? <PinOff size={14} /> : <Pin size={14} />}
+            {pinned ? <Pin size={14} fill="currentColor" /> : <Pin size={14} />}
           </button>
           <button
             className="card-action-btn"
@@ -217,49 +214,21 @@ const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
             <ExternalLink size={14} />
           </button>
           <button
-            className="card-menu-button"
+            className="card-action-btn delete"
             onClick={e => {
               e.stopPropagation()
-              setShowMenu(!showMenu)
+              onDelete?.(id)
             }}
+            title="删除"
           >
-            <MoreVertical size={16} />
+            <Trash2 size={14} />
           </button>
-          {showMenu && (
-            <div className="card-menu" onClick={e => e.stopPropagation()}>
-              {isDeleted ? (
-                <button
-                  className="card-menu-item"
-                  onClick={() => {
-                    onRestore?.(id)
-                    setShowMenu(false)
-                  }}
-                >
-                  <RotateCcw size={14} />
-                  <span>恢复</span>
-                </button>
-              ) : (
-                <>
-                  <button
-                    className="card-menu-item"
-                    onClick={() => {
-                      onDelete?.(id)
-                      setShowMenu(false)
-                    }}
-                  >
-                    <Trash2 size={14} />
-                    <span>删除</span>
-                  </button>
-                </>
-              )}
-            </div>
-          )}
         </div>
       </div>
 
-      {content && (
-        <div className="card-content">
-          <p className="card-description">{content}</p>
+      {url && (
+        <div className="card-content" onClick={handleOpenLink} style={{ cursor: 'pointer' }}>
+          <p className="card-description">{content || url}</p>
         </div>
       )}
 
@@ -301,44 +270,18 @@ const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
             }}
             title={pinned ? '取消置顶' : '置顶'}
           >
-            {pinned ? <PinOff size={14} /> : <Pin size={14} />}
+            {pinned ? <Pin size={14} fill="currentColor" /> : <Pin size={14} />}
           </button>
           <button
-            className="card-menu-button"
+            className="card-action-btn delete"
             onClick={e => {
               e.stopPropagation()
-              setShowMenu(!showMenu)
+              onDelete?.(id)
             }}
+            title="删除"
           >
-            <MoreVertical size={16} />
+            <Trash2 size={14} />
           </button>
-          {showMenu && (
-            <div className="card-menu" onClick={e => e.stopPropagation()}>
-              {isDeleted ? (
-                <button
-                  className="card-menu-item"
-                  onClick={() => {
-                    onRestore?.(id)
-                    setShowMenu(false)
-                  }}
-                >
-                  <RotateCcw size={14} />
-                  <span>恢复</span>
-                </button>
-              ) : (
-                <button
-                  className="card-menu-item delete"
-                  onClick={() => {
-                    onDelete?.(id)
-                    setShowMenu(false)
-                  }}
-                >
-                  <Trash2 size={14} />
-                  <span>删除</span>
-                </button>
-              )}
-            </div>
-          )}
         </div>
       </div>
 
