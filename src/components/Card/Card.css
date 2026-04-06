@@ -35,8 +35,8 @@
 }
 
 .card-type-icon {
-  width: 32px;
-  height: 32px;
+  width: 64px;
+  height: 64px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -50,8 +50,8 @@
 }
 
 .card-favicon {
-  width: 16px;
-  height: 16px;
+  width: 32px;
+  height: 32px;
 }
 
 .card-title-wrapper {

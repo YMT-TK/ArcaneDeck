@@ -35,6 +35,23 @@ function Settings() {
   const [previewTextFontSize, setPreviewTextFontSize] = useState(savedTextFontSize)
   const [previewBackupPath, setPreviewBackupPath] = useState(savedBackupPath)
   const [hasChanges, setHasChanges] = useState(false)
+  const [appVersion, setAppVersion] = useState('v1.0.0')
+
+  /**
+   * 获取应用版本号
+   */
+  useEffect(() => {
+    const fetchVersion = async () => {
+      try {
+        const version = await window.electronAPI.app.getVersion()
+        setAppVersion(`v${version}`)
+      } catch (error) {
+        console.error('Failed to get app version:', error)
+      }
+    }
+
+    fetchVersion()
+  }, [])
 
   const themes: ThemeOption[] = [
     {
@@ -271,7 +288,7 @@ function Settings() {
                   <div className="version-info">
                     <div className="version-item">
                       <span className="version-label">软件版本</span>
-                      <span className="version-value">v1.0.0</span>
+                      <span className="version-value">{appVersion}</span>
                     </div>
                     <div className="version-item">
                       <span className="version-label">Electron</span>

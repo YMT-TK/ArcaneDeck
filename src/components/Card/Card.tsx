@@ -173,7 +173,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
     <>
       <div className="card-header">
         <div className="card-type-icon link-icon">
-          {favicon ? <img src={favicon} alt="" className="card-favicon" /> : <Link size={16} />}
+          {favicon ? <img src={favicon.startsWith('file://') ? favicon : `file://${favicon}`} alt="" className="card-favicon" /> : <Link size={32} />}
         </div>
         <div className="card-title-wrapper">
           <h3 className="card-title">

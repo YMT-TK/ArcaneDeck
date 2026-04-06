@@ -37,15 +37,18 @@ const EditModal = () => {
    * 初始化表单数据
    */
   useEffect(() => {
-    if (isNew) {
-      handleReset()
-    } else if (currentCard) {
-      setTitle(currentCard.title || '')
-      setUrl(currentCard.url || '')
-      setFavicon(currentCard.favicon || '')
-      setFaviconPath(currentCard.favicon || '')
+    if (isOpen) {
+      if (isNew) {
+        handleReset()
+      } else if (currentCard) {
+        setTitle(currentCard.title || '')
+        setUrl(currentCard.url || '')
+        setFavicon(currentCard.favicon || '')
+        setFaviconPath(currentCard.favicon || '')
+        setSelectedType('entertainment')
+      }
     }
-  }, [currentCard, isNew])
+  }, [currentCard, isNew, isOpen])
 
   /**
    * 按下ESC键关闭弹窗
@@ -126,12 +129,17 @@ const EditModal = () => {
       }
     } else {
       if (!cardId) return
-      await updateCard(cardId, {
-        title,
-        url,
-        favicon: faviconPath,
-      })
-      closeEditModal()
+      try {
+        const updatedCard = await window.electronAPI.card.update(cardId, {
+          title,
+          url,
+          favicon: faviconPath,
+        })
+        updateCard(cardId, updatedCard)
+        closeEditModal()
+      } catch (error) {
+        console.error('Failed to update link card:', error)
+      }
     }
   }
 
@@ -260,37 +268,39 @@ const EditModal = () => {
                 </div>
               ) : favicon ? (
                 <img
-                  src={favicon}
+                  src={favicon.startsWith('file://') ? favicon : `file://${favicon}`}
                   alt=""
                   className="w-full h-full object-contain opacity-80 group-hover:scale-110 transition-transform duration-700"
                 />
               ) : (
-                <Wand2 size={32} style={{ color: 'rgba(255, 255, 255, 0.3)' }} />
+                <>
+                  <Wand2 size={32} style={{ color: 'rgba(255, 255, 255, 0.3)' }} />
+                  <div
+                    className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent pointer-events-none"
+                    style={{ background: 'linear-gradient(to top, rgba(67, 0, 0, 0.8), transparent)' }}
+                  ></div>
+                  <div className="absolute bottom-6 left-0 right-0 px-4 text-center pointer-events-none">
+                    <p
+                      className="text-[10px] italic tracking-widest uppercase"
+                      style={{ fontFamily: 'Georgia, serif', color: '#ffffff' }}
+                    >
+                      {selectedType === 'entertainment' ? 'Entertainment' : selectedType === 'film' ? 'Film' : selectedType === 'study' ? 'Study' : 'Other'}
+                    </p>
+                    <p
+                      className="text-[8px] truncate"
+                      style={{ fontFamily: 'Georgia, serif', color: 'rgba(255, 255, 255, 0.6)' }}
+                    >
+                      {url ? (() => {
+                        try {
+                          return new URL(url.startsWith('http') ? url : `https://${url}`).hostname
+                        } catch {
+                          return 'example.com'
+                        }
+                      })() : 'example.com'}
+                    </p>
+                  </div>
+                </>
               )}
-              <div
-                className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent pointer-events-none"
-                style={{ background: 'linear-gradient(to top, rgba(67, 0, 0, 0.8), transparent)' }}
-              ></div>
-              <div className="absolute bottom-6 left-0 right-0 px-4 text-center pointer-events-none">
-                <p
-                  className="text-[10px] italic tracking-widest uppercase"
-                  style={{ fontFamily: 'Georgia, serif', color: '#ffffff' }}
-                >
-                  {selectedType === 'entertainment' ? 'Entertainment' : selectedType === 'film' ? 'Film' : selectedType === 'study' ? 'Study' : 'Other'}
-                </p>
-                <p
-                  className="text-[8px] truncate"
-                  style={{ fontFamily: 'Georgia, serif', color: 'rgba(255, 255, 255, 0.6)' }}
-                >
-                  {url ? (() => {
-                    try {
-                      return new URL(url.startsWith('http') ? url : `https://${url}`).hostname
-                    } catch {
-                      return 'example.com'
-                    }
-                  })() : 'example.com'}
-                </p>
-              </div>
             </div>
           </div>
           <p
