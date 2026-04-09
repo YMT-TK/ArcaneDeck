@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
-import { X, Gamepad2, Film, BookOpen, MoreHorizontal, Sparkles, Wand2, Eraser } from 'lucide-react'
+import { X, Gamepad2, Film, BookOpen, MoreHorizontal, Sparkles, Wand2, Eraser, Tag } from 'lucide-react'
 import { useEditModalStore, useCardStore } from '../../stores'
+import TiptapEditor from '../Editor/TiptapEditor'
 import './EditModal.css'
 
 /**
@@ -27,6 +28,10 @@ const EditModal = () => {
   const [faviconPath, setFaviconPath] = useState('')
   const [selectedType, setSelectedType] = useState('entertainment')
   const [isFetchingFavicon, setIsFetchingFavicon] = useState(false)
+  const [noteContent, setNoteContent] = useState('')
+  const [docContent, setDocContent] = useState('')
+  const [tags, setTags] = useState<string[]>([])
+  const [tagInput, setTagInput] = useState('')
 
   /**
    * 获取当前编辑的卡片
@@ -46,6 +51,9 @@ const EditModal = () => {
         setFavicon(currentCard.favicon || '')
         setFaviconPath(currentCard.favicon || '')
         setSelectedType('entertainment')
+        setNoteContent(currentCard.type === 'note' ? currentCard.content || '' : '')
+        setDocContent(currentCard.type === 'doc' ? currentCard.content || '' : '')
+        setTags([])
       }
     }
   }, [currentCard, isNew, isOpen])
@@ -100,6 +108,26 @@ const EditModal = () => {
   }
 
   /**
+   * 添加标签
+   */
+  const handleAddTag = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && tagInput.trim()) {
+      const newTag = tagInput.trim()
+      if (!tags.includes(newTag)) {
+        setTags([...tags, newTag])
+      }
+      setTagInput('')
+    }
+  }
+
+  /**
+   * 删除标签
+   */
+  const handleRemoveTag = (tagToRemove: string) => {
+    setTags(tags.filter(tag => tag !== tagToRemove))
+  }
+
+  /**
    * 点击遮盖层关闭弹窗
    */
   const handleOverlayClick = (e: React.MouseEvent) => {
@@ -112,33 +140,89 @@ const EditModal = () => {
    * 保存链接卡片
    */
   const handleSave = async () => {
-    if (isNew) {
-      try {
-        const newCard = await window.electronAPI.card.create({
-          title: title || (url ? new URL(url.startsWith('http') ? url : `https://${url}`).hostname : '未命名链接'),
-          content: url,
-          type: 'link',
-          tabId: null,
-          url: url,
-          favicon: faviconPath,
-        })
-        addCard(newCard)
-        closeEditModal()
-      } catch (error) {
-        console.error('Failed to create link card:', error)
+    if (cardType === 'link') {
+      if (isNew) {
+        try {
+          const newCard = await window.electronAPI.card.create({
+            title: title || (url ? new URL(url.startsWith('http') ? url : `https://${url}`).hostname : '未命名链接'),
+            content: url,
+            type: 'link',
+            tabId: null,
+            url: url,
+            favicon: faviconPath,
+          })
+          addCard(newCard)
+          closeEditModal()
+        } catch (error) {
+          console.error('Failed to create link card:', error)
+        }
+      } else {
+        if (!cardId) return
+        try {
+          const updatedCard = await window.electronAPI.card.update(cardId, {
+            title,
+            url,
+            favicon: faviconPath,
+          })
+          updateCard(cardId, updatedCard)
+          closeEditModal()
+        } catch (error) {
+          console.error('Failed to update link card:', error)
+        }
       }
-    } else {
-      if (!cardId) return
-      try {
-        const updatedCard = await window.electronAPI.card.update(cardId, {
-          title,
-          url,
-          favicon: faviconPath,
-        })
-        updateCard(cardId, updatedCard)
-        closeEditModal()
-      } catch (error) {
-        console.error('Failed to update link card:', error)
+    } else if (cardType === 'note') {
+      if (isNew) {
+        try {
+          const newCard = await window.electronAPI.card.create({
+            title: title || '未命名便签',
+            content: noteContent,
+            type: 'note',
+            tabId: null,
+          })
+          addCard(newCard)
+          closeEditModal()
+        } catch (error) {
+          console.error('Failed to create note card:', error)
+        }
+      } else {
+        if (!cardId) return
+        try {
+          const updatedCard = await window.electronAPI.card.update(cardId, {
+            title,
+            content: noteContent,
+          })
+          updateCard(cardId, updatedCard)
+          closeEditModal()
+        } catch (error) {
+          console.error('Failed to update note card:', error)
+        }
+      }
+    } else if (cardType === 'doc') {
+      if (isNew) {
+        try {
+          const newCard = await window.electronAPI.card.create({
+            title: title || '未命名笔记',
+            content: docContent,
+            type: 'doc',
+            tabId: null,
+          })
+          addCard(newCard)
+          closeEditModal()
+        } catch (error) {
+          console.error('Failed to create doc card:', error)
+        }
+      } else {
+        if (!cardId) return
+        try {
+          const updatedCard = await window.electronAPI.card.update(cardId, {
+            title,
+            content: docContent,
+          })
+          updateCard(cardId, updatedCard)
+          closeEditModal()
+        } catch (error) {
+          console.error('Failed to update doc card:', error)
+        }
       }
     }
   }
@@ -152,6 +236,10 @@ const EditModal = () => {
     setFavicon('')
     setFaviconPath('')
     setSelectedType('entertainment')
+    setNoteContent('')
+    setDocContent('')
+    setTags([])
+    setTagInput('')
   }
 
   if (!isOpen) return null
@@ -345,6 +433,249 @@ const EditModal = () => {
   )
 
   /**
+   * 渲染便签编辑表单
+   */
+  const renderNoteForm = () => (
+    <div className="relative w-full max-w-4xl max-h-[921px] flex flex-col overflow-hidden" style={{ backgroundColor: '#fff8f2' }}>
+      <div className="relative p-8 pb-4">
+        <div className="absolute top-4 right-8">
+          <button
+            className="hover:text-primary transition-colors active:scale-90"
+            onClick={closeEditModal}
+            style={{ color: 'rgba(67, 0, 0, 0.4)' }}
+          >
+            <X size={32} />
+          </button>
+        </div>
+        <input
+          className="w-full bg-transparent border-none p-0 italic text-4xl focus:ring-0"
+          placeholder="Title of the Memo..."
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          style={{
+            fontFamily: 'Georgia, serif',
+            color: '#430000',
+          }}
+        />
+        <div className="h-px w-32 mt-2" style={{ backgroundColor: 'rgba(160, 65, 0, 0.3)' }}></div>
+      </div>
+
+      <div className="relative flex-grow px-8 py-4 overflow-y-auto">
+        <textarea
+          className="w-full h-full min-h-[300px] bg-transparent border-none p-0 text-lg leading-relaxed focus:ring-0 resize-none"
+          placeholder="Write your alchemical observations here..."
+          value={noteContent}
+          onChange={(e) => setNoteContent(e.target.value)}
+          style={{
+            fontFamily: 'Georgia, serif',
+            color: '#221b0b',
+          }}
+        />
+      </div>
+
+      <div className="relative p-8 border-t" style={{ backgroundColor: 'rgba(252, 236, 210, 0.5)', borderColor: 'rgba(218, 193, 191, 0.1)' }}>
+        <div className="flex flex-wrap items-center gap-4 mb-8">
+          <span className="text-sm italic flex items-center gap-1" style={{ fontFamily: 'Georgia, serif', color: 'rgba(67, 0, 0, 0.6)' }}>
+            <Tag size={18} />
+            Sigils:
+          </span>
+          {tags.map((tag, index) => (
+            <div key={index} className="relative flex items-center">
+              <span className="px-4 py-1.5 text-sm pr-6 shadow-sm" style={{
+                backgroundColor: '#a04100',
+                color: '#ffffff',
+                fontFamily: 'Georgia, serif',
+                fontStyle: 'italic',
+                clipPath: 'polygon(0% 0%, 100% 0%, 100% 50%, 85% 100%, 0% 100%)',
+              }}>
+                {tag}
+              </span>
+              <button
+                onClick={() => handleRemoveTag(tag)}
+                className="absolute -right-1 w-4 h-4 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: '#430000', border: '2px solid rgba(160, 65, 0, 0.5)' }}
+              >
+                <X size={10} style={{ color: '#ffffff' }} />
+              </button>
+            </div>
+          ))}
+          <div className="relative">
+            <input
+              className="bg-transparent border-none p-0 text-sm focus:ring-0 w-24 border-b"
+              placeholder="Add sigil..."
+              type="text"
+              value={tagInput}
+              onChange={(e) => setTagInput(e.target.value)}
+              onKeyDown={handleAddTag}
+              style={{
+                fontFamily: 'Georgia, serif',
+                fontStyle: 'italic',
+                color: '#544241',
+                borderColor: 'rgba(67, 0, 0, 0.1)',
+              }}
+            />
+          </div>
+        </div>
+
+        <div className="flex justify-between items-center">
+          <button
+            className="flex items-center gap-2 transition-colors italic"
+            style={{ fontFamily: 'Georgia, serif', color: 'rgba(67, 0, 0, 0.6)' }}
+          >
+            <Eraser size={20} />
+            Discard
+          </button>
+          <div className="flex gap-6 items-center">
+            <button
+              className="transition-colors italic"
+              style={{ fontFamily: 'Georgia, serif', color: 'rgba(67, 0, 0, 0.6)' }}
+            >
+              Save as Draft
+            </button>
+            <button
+              onClick={handleSave}
+              className="relative px-10 py-3 rounded-full italic text-lg hover:translate-y-[-1px] active:scale-[0.98] transition-all overflow-hidden"
+              style={{
+                fontFamily: 'Georgia, serif',
+                backgroundColor: '#430000',
+                color: '#ffffff',
+                boxShadow: '0 4px 15px rgba(67, 0, 0, 0.3)',
+              }}
+            >
+              <div className="absolute inset-0 opacity-50" style={{ background: 'linear-gradient(to right, #430000, transparent, rgba(255, 255, 255, 0.1))' }}></div>
+              <span className="relative flex items-center gap-2">
+                <Sparkles size={24} fill="currentColor" />
+                {isNew ? '创建便签' : '保存便签'}
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+
+  /**
+   * 渲染笔记编辑表单
+   */
+  const renderDocForm = () => (
+    <div className="relative w-full max-w-4xl max-h-[921px] flex flex-col overflow-hidden" style={{ backgroundColor: '#fff8f2' }}>
+      <div className="relative p-8 pb-4">
+        <div className="absolute top-4 right-8">
+          <button
+            className="hover:text-primary transition-colors active:scale-90"
+            onClick={closeEditModal}
+            style={{ color: 'rgba(67, 0, 0, 0.4)' }}
+          >
+            <X size={32} />
+          </button>
+        </div>
+        <input
+          className="w-full bg-transparent border-none p-0 italic text-4xl focus:ring-0"
+          placeholder="Title of the Memo..."
+          type="text"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          style={{
+            fontFamily: 'Georgia, serif',
+            color: '#430000',
+          }}
+        />
+        <div className="h-px w-32 mt-2" style={{ backgroundColor: 'rgba(160, 65, 0, 0.3)' }}></div>
+      </div>
+
+      <div className="relative flex-grow px-8 py-4 overflow-y-auto">
+        <div style={{ minHeight: '300px' }}>
+          <TiptapEditor
+            content={docContent}
+            placeholder="Write your alchemical observations here..."
+            onUpdate={(content) => setDocContent(content)}
+          />
+        </div>
+      </div>
+
+      <div className="relative p-8 border-t" style={{ backgroundColor: 'rgba(252, 236, 210, 0.5)', borderColor: 'rgba(218, 193, 191, 0.1)' }}>
+        <div className="flex flex-wrap items-center gap-4 mb-8">
+          <span className="text-sm italic flex items-center gap-1" style={{ fontFamily: 'Georgia, serif', color: 'rgba(67, 0, 0, 0.6)' }}>
+            <Tag size={18} />
+            Sigils:
+          </span>
+          {tags.map((tag, index) => (
+            <div key={index} className="relative flex items-center">
+              <span className="px-4 py-1.5 text-sm pr-6 shadow-sm" style={{
+                backgroundColor: '#a04100',
+                color: '#ffffff',
+                fontFamily: 'Georgia, serif',
+                fontStyle: 'italic',
+                clipPath: 'polygon(0% 0%, 100% 0%, 100% 50%, 85% 100%, 0% 100%)',
+              }}>
+                {tag}
+              </span>
+              <button
+                onClick={() => handleRemoveTag(tag)}
+                className="absolute -right-1 w-4 h-4 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: '#430000', border: '2px solid rgba(160, 65, 0, 0.5)' }}
+              >
+                <X size={10} style={{ color: '#ffffff' }} />
+              </button>
+            </div>
+          ))}
+          <div className="relative">
+            <input
+              className="bg-transparent border-none p-0 text-sm focus:ring-0 w-24 border-b"
+              placeholder="Add sigil..."
+              type="text"
+              value={tagInput}
+              onChange={(e) => setTagInput(e.target.value)}
+              onKeyDown={handleAddTag}
+              style={{
+                fontFamily: 'Georgia, serif',
+                fontStyle: 'italic',
+                color: '#544241',
+                borderColor: 'rgba(67, 0, 0, 0.1)',
+              }}
+            />
+          </div>
+        </div>
+
+        <div className="flex justify-between items-center">
+          <button
+            className="flex items-center gap-2 transition-colors italic"
+            style={{ fontFamily: 'Georgia, serif', color: 'rgba(67, 0, 0, 0.6)' }}
+          >
+            <Eraser size={20} />
+            Discard
+          </button>
+          <div className="flex gap-6 items-center">
+            <button
+              className="transition-colors italic"
+              style={{ fontFamily: 'Georgia, serif', color: 'rgba(67, 0, 0, 0.6)' }}
+            >
+              Save as Draft
+            </button>
+            <button
+              onClick={handleSave}
+              className="relative px-10 py-3 rounded-full italic text-lg hover:translate-y-[-1px] active:scale-[0.98] transition-all overflow-hidden"
+              style={{
+                fontFamily: 'Georgia, serif',
+                backgroundColor: '#430000',
+                color: '#ffffff',
+                boxShadow: '0 4px 15px rgba(67, 0, 0, 0.3)',
+              }}
+            >
+              <div className="absolute inset-0 opacity-50" style={{ background: 'linear-gradient(to right, #430000, transparent, rgba(255, 255, 255, 0.1))' }}></div>
+              <span className="relative flex items-center gap-2">
+                <Sparkles size={24} fill="currentColor" />
+                {isNew ? '创建笔记' : '保存笔记'}
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+
+  /**
    * 根据卡片类型渲染不同的内容
    */
   const renderContent = () => {
@@ -352,7 +683,9 @@ const EditModal = () => {
       case 'link':
         return renderLinkForm()
       case 'note':
+        return renderNoteForm()
       case 'doc':
+        return renderDocForm()
       case 'image':
       default:
         return (
@@ -377,18 +710,22 @@ const EditModal = () => {
 
   return (
     <div className="edit-modal-overlay" onClick={handleOverlayClick}>
-      <div className="edit-modal-container">
-        {renderContent()}
+      {(cardType === 'note' || cardType === 'doc') ? (
+        cardType === 'note' ? renderNoteForm() : renderDocForm()
+      ) : (
+        <div className="edit-modal-container">
+          {renderContent()}
 
-        <button
-          className="absolute top-4 right-4 transition-colors"
-          onClick={closeEditModal}
-          title="Close"
-          style={{ color: 'rgba(67, 0, 0, 0.3)' }}
-        >
-          <X size={32} />
-        </button>
-      </div>
+          <button
+            className="absolute top-4 right-4 transition-colors"
+            onClick={closeEditModal}
+            title="Close"
+            style={{ color: 'rgba(67, 0, 0, 0.3)' }}
+          >
+            <X size={32} />
+          </button>
+        </div>
+      )}
     </div>
   )
 }

@@ -1,4 +1,5 @@
 export { useCardStore } from './cardStore'
+export { useCardActionsStore } from './cardActionsStore'
 export { useConfigStore } from './configStore'
 export { useSettingsStore } from './settingsStore'
 export { useSidebarStore } from './sidebarStore'

@@ -1,15 +1,13 @@
 import { useState, useEffect, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Plus, LayoutGrid, Columns, RefreshCw } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { Card } from '../Card'
 import { ImageCardEditor } from '../ImageCardEditor'
 import { useCardStore } from '../../stores/cardStore'
 import { useSidebarStore } from '../../stores/sidebarStore'
 import { useEditModalStore } from '../../stores'
 import './CardGrid.css'
-
-type ViewMode = 'grid' | 'masonry' | 'auto'
 
 type CardType = 'note' | 'doc' | 'link' | 'image'
 
@@ -43,16 +41,16 @@ const getCardLayout = (type: CardType): 'masonry' | 'grid' => {
 /**
  * 获取导航标题
  */
-const getNavTitle = (navId: string): string => {
-  const titles: Record<string, string> = {
-    all: '全部卡片',
-    note: '便签',
-    doc: '笔记',
-    link: '链接',
-    image: '图文',
-  }
-  return titles[navId] || '全部卡片'
-}
+// const getNavTitle = (navId: string): string => {
+//   const titles: Record<string, string> = {
+//     all: '全部卡片',
+//     note: '便签',
+//     doc: '笔记',
+//     link: '链接',
+//     image: '图文',
+//   }
+//   return titles[navId] || '全部卡片'
+// }
 
 /**
  * 卡片网格组件
@@ -73,7 +71,6 @@ function CardGrid() {
   const { activeNavId, showRecycleBin } = useSidebarStore()
   const { openEditModal } = useEditModalStore()
 
-  const [viewMode, setViewMode] = useState<ViewMode>('auto')
   const [showImageEditor, setShowImageEditor] = useState(false)
   const [deleteConfirmCardId, setDeleteConfirmCardId] = useState<string | null>(null)
 
@@ -108,10 +105,6 @@ function CardGrid() {
     }
   }, [activeNavId, showRecycleBin, setCards, setLoading])
 
-  useEffect(() => {
-    loadCards()
-  }, [loadCards])
-
   /**
    * 获取当前选中的卡片类型
    */
@@ -139,6 +132,26 @@ function CardGrid() {
       handleCreateSimpleCard('note')
     }
   }
+
+  useEffect(() => {
+    loadCards()
+  }, [loadCards])
+
+  /**
+   * 将函数暴露到 window 对象上，供 Header 组件使用
+   */
+  useEffect(() => {
+    ;(window as any).cardActions = {
+      loadCards,
+      handleAddCard,
+      getCurrentCardType,
+      showRecycleBin,
+    }
+
+    return () => {
+      delete (window as any).cardActions
+    }
+  }, [loadCards, handleAddCard, getCurrentCardType, showRecycleBin])
 
   /**
    * 创建便签或笔记卡片
@@ -230,7 +243,7 @@ function CardGrid() {
   }
 
   /**
-   * 根据视图模式分组卡片，置顶卡片排在顶部
+   * 分组卡片，置顶卡片排在顶部
    */
   const getGroupedCards = () => {
     const sortedCards = [...cards].sort((a, b) => {
@@ -240,73 +253,25 @@ function CardGrid() {
       return a.position - b.position
     })
 
-    if (viewMode === 'auto') {
-      const masonryCards = sortedCards.filter(c => getCardLayout(c.type) === 'masonry')
-      const gridCards = sortedCards.filter(c => getCardLayout(c.type) === 'grid')
-      return { masonryCards, gridCards }
-    }
-    return { masonryCards: sortedCards, gridCards: [] }
+    const masonryCards = sortedCards.filter(c => getCardLayout(c.type) === 'masonry')
+    const gridCards = sortedCards.filter(c => getCardLayout(c.type) === 'grid')
+    return { masonryCards, gridCards }
   }
 
   const { masonryCards, gridCards } = getGroupedCards()
 
-  const currentTitle = showRecycleBin ? '回收站' : getNavTitle(activeNavId)
-
   return (
     <div className="card-grid-container">
-      <div className="card-grid-toolbar">
+      {/* <div className="card-grid-toolbar">
         <div className="toolbar-left">
-          <h2 className="toolbar-title">{currentTitle}</h2>
+          <h2 className="toolbar-title">{showRecycleBin ? '回收站' : activeNavId === 'all' ? '全部卡片' : activeNavId === 'note' ? '便签' : activeNavId === 'doc' ? '笔记' : activeNavId === 'link' ? '链接' : activeNavId === 'image' ? '图文' : '全部卡片'}</h2>
           <span className="card-count">{cards.length} 张卡片</span>
         </div>
         <div className="toolbar-right">
-          <button className="toolbar-button" onClick={loadCards} title="刷新">
-            <RefreshCw size={16} />
-          </button>
-          <div className="view-mode-toggle">
-            <button
-              className={`view-mode-btn ${viewMode === 'grid' ? 'active' : ''}`}
-              onClick={() => setViewMode('grid')}
-              title="网格视图"
-            >
-              <LayoutGrid size={16} />
-            </button>
-            <button
-              className={`view-mode-btn ${viewMode === 'masonry' ? 'active' : ''}`}
-              onClick={() => setViewMode('masonry')}
-              title="瀑布流视图"
-            >
-              <Columns size={16} />
-            </button>
-            <button
-              className={`view-mode-btn ${viewMode === 'auto' ? 'active' : ''}`}
-              onClick={() => setViewMode('auto')}
-              title="自动混合布局"
-            >
-              ⚡
-            </button>
-          </div>
-          {!showRecycleBin && (
-            <button className="add-card-button" onClick={handleAddCard}>
-              <Plus size={16} />
-              <span>
-                添加
-                {getCurrentCardType() === 'note'
-                  ? '便签'
-                  : getCurrentCardType() === 'doc'
-                    ? '笔记'
-                    : getCurrentCardType() === 'link'
-                      ? '链接'
-                      : getCurrentCardType() === 'image'
-                        ? '图文'
-                        : '卡片'}
-              </span>
-            </button>
-          )}
         </div>
-      </div>
+      </div> */}
 
-      <div className={`card-grid-content ${viewMode}`}>
+      <div className="card-grid-content auto">
         {isLoading ? (
           <div className="loading-state">
             <div className="loading-spinner" />
@@ -326,7 +291,7 @@ function CardGrid() {
               </button>
             )}
           </div>
-        ) : viewMode === 'auto' ? (
+        ) : (
           <div className="mixed-layout">
             {masonryCards.length > 0 && (
               <div className="masonry-section">
@@ -386,31 +351,6 @@ function CardGrid() {
                 </div>
               </div>
             )}
-          </div>
-        ) : (
-          <div className={viewMode === 'masonry' ? 'masonry-grid' : 'uniform-grid'}>
-            <AnimatePresence mode="popLayout">
-              {cards.map(card => (
-                <Card
-                  key={card.id}
-                  id={card.id}
-                  title={card.title}
-                  content={card.content}
-                  type={card.type}
-                  status={card.status}
-                  pinned={card.pinned}
-                  url={card.url}
-                  imagePath={card.imagePath}
-                  favicon={card.favicon}
-                  createdAt={card.createdAt}
-                  updatedAt={card.updatedAt}
-                  onDelete={handleDeleteCard}
-                  onRestore={handleRestoreCard}
-                  onPin={handleTogglePin}
-                  onClick={() => handleCardClick(card.id, card.type)}
-                />
-              ))}
-            </AnimatePresence>
           </div>
         )}
       </div>
