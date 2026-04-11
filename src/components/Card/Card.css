@@ -232,12 +232,48 @@
  */
 .torn-edge {
   clip-path: polygon(
-    0% 2%, 5% 0%, 10% 3%, 15% 1%, 20% 4%, 25% 0%, 30% 2%, 35% 0%, 
-    40% 3%, 45% 1%, 50% 4%, 55% 0%, 60% 2%, 65% 0%, 70% 3%, 75% 1%, 
-    80% 4%, 85% 0%, 90% 2%, 95% 0%, 100% 3%, 
-    100% 97%, 95% 100%, 90% 98%, 85% 100%, 80% 97%, 75% 99%, 70% 96%, 
-    65% 100%, 60% 97%, 55% 99%, 50% 96%, 45% 100%, 40% 97%, 35% 99%, 
-    30% 96%, 25% 100%, 20% 97%, 15% 99%, 10% 96%, 5% 100%, 0% 97%
+    0% 2%,
+    5% 0%,
+    10% 3%,
+    15% 1%,
+    20% 4%,
+    25% 0%,
+    30% 2%,
+    35% 0%,
+    40% 3%,
+    45% 1%,
+    50% 4%,
+    55% 0%,
+    60% 2%,
+    65% 0%,
+    70% 3%,
+    75% 1%,
+    80% 4%,
+    85% 0%,
+    90% 2%,
+    95% 0%,
+    100% 3%,
+    100% 97%,
+    95% 100%,
+    90% 98%,
+    85% 100%,
+    80% 97%,
+    75% 99%,
+    70% 96%,
+    65% 100%,
+    60% 97%,
+    55% 99%,
+    50% 96%,
+    45% 100%,
+    40% 97%,
+    35% 99%,
+    30% 96%,
+    25% 100%,
+    20% 97%,
+    15% 99%,
+    10% 96%,
+    5% 100%,
+    0% 97%
   );
 }
 
@@ -247,7 +283,9 @@
 .unified-card {
   position: relative;
   cursor: pointer;
-  transition: transform 0.5s ease, box-shadow 0.3s ease;
+  transition:
+    transform 0.5s ease,
+    box-shadow 0.3s ease;
   --tw-translate-x: 0;
   --tw-translate-y: 0;
   --tw-rotate: 0deg;
@@ -255,7 +293,9 @@
   --tw-skew-y: 0;
   --tw-scale-x: 1;
   --tw-scale-y: 1;
-  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate))
+    skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x))
+    scaleY(var(--tw-scale-y));
 }
 
 .unified-card.rotate-2 {
@@ -312,7 +352,7 @@
   opacity: 1;
 }
 
-.unified-card[data-pinned="true"] .card-actions-unified {
+.unified-card[data-pinned='true'] .card-actions-unified {
   opacity: 1;
 }
 
@@ -417,7 +457,10 @@
 .card-link {
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(99, 102, 241, 0.05));
   border-color: rgba(59, 130, 246, 0.3);
-  transition: transform 300ms ease, box-shadow 300ms ease, border-color 300ms ease;
+  transition:
+    transform 300ms ease,
+    box-shadow 300ms ease,
+    border-color 300ms ease;
 }
 
 .card-link:hover {
@@ -482,7 +525,9 @@
 
 /* 图文卡片悬浮样式 */
 .card-image {
-  transition: transform 300ms ease, box-shadow 300ms ease;
+  transition:
+    transform 300ms ease,
+    box-shadow 300ms ease;
 }
 
 .card-image:hover {

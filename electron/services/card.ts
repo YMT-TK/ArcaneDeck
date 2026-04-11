@@ -117,7 +117,7 @@ export class CardService {
    */
   static async softDelete(id: string): Promise<Card> {
     const prisma = await getPrisma()
-    
+
     const card = await prisma.card.findUnique({
       where: { id },
       select: { favicon: true, imagePath: true },
@@ -173,10 +173,7 @@ export class CardService {
         status: 'active',
         tabId: tabId ?? null,
       },
-      orderBy: [
-        { pinned: 'desc' },
-        { position: 'asc' },
-      ],
+      orderBy: [{ pinned: 'desc' }, { position: 'asc' }],
     })
   }
 
@@ -190,10 +187,7 @@ export class CardService {
         status: 'active',
         type,
       },
-      orderBy: [
-        { pinned: 'desc' },
-        { position: 'asc' },
-      ],
+      orderBy: [{ pinned: 'desc' }, { position: 'asc' }],
     })
   }
 
@@ -225,19 +219,13 @@ export class CardService {
   static async search(query: string): Promise<Card[]> {
     const prisma = await getPrisma()
     const sanitizedQuery = this.sanitizeInput(query)
-    
+
     return prisma.card.findMany({
       where: {
         status: 'active',
-        OR: [
-          { title: { contains: sanitizedQuery } },
-          { content: { contains: sanitizedQuery } },
-        ],
+        OR: [{ title: { contains: sanitizedQuery } }, { content: { contains: sanitizedQuery } }],
       },
-      orderBy: [
-        { pinned: 'desc' },
-        { updatedAt: 'desc' },
-      ],
+      orderBy: [{ pinned: 'desc' }, { updatedAt: 'desc' }],
       take: 50,
     })
   }

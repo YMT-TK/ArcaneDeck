@@ -209,26 +209,26 @@
   cursor: not-allowed;
 }
 
-[data-theme="scifi"] .image-icon {
+[data-theme='scifi'] .image-icon {
   color: #00f0ff;
 }
 
-[data-theme="scifi"] .save-btn {
+[data-theme='scifi'] .save-btn {
   background: linear-gradient(135deg, #00f0ff, #b967ff);
 }
 
-[data-theme="scifi"] .upload-dropzone:hover {
+[data-theme='scifi'] .upload-dropzone:hover {
   border-color: #00f0ff;
 }
 
-[data-theme="magic"] .image-icon {
+[data-theme='magic'] .image-icon {
   color: #d4af37;
 }
 
-[data-theme="magic"] .save-btn {
+[data-theme='magic'] .save-btn {
   background: linear-gradient(135deg, #d4af37, #8b0000);
 }
 
-[data-theme="magic"] .upload-dropzone:hover {
+[data-theme='magic'] .upload-dropzone:hover {
   border-color: #d4af37;
 }

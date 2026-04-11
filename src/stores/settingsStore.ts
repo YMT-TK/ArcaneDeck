@@ -10,9 +10,9 @@ interface SettingsStore {
 /**
  * 设置弹窗状态管理 Store
  */
-export const useSettingsStore = create<SettingsStore>((set) => ({
+export const useSettingsStore = create<SettingsStore>(set => ({
   isOpen: false,
   openSettings: () => set({ isOpen: true }),
   closeSettings: () => set({ isOpen: false }),
-  toggleSettings: () => set((state) => ({ isOpen: !state.isOpen })),
+  toggleSettings: () => set(state => ({ isOpen: !state.isOpen })),
 }))

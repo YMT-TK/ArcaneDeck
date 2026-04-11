@@ -33,13 +33,7 @@ export function AnimatedCard({ children, delay = 0, ...props }: AnimatedCardProp
 /**
  * 淡入动画组件
  */
-export function FadeIn({ 
-  children, 
-  delay = 0 
-}: { 
-  children: ReactNode
-  delay?: number 
-}) {
+export function FadeIn({ children, delay = 0 }: { children: ReactNode; delay?: number }) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -54,14 +48,14 @@ export function FadeIn({
 /**
  * 滑入动画组件
  */
-export function SlideIn({ 
-  children, 
+export function SlideIn({
+  children,
   direction = 'left',
-  delay = 0 
-}: { 
+  delay = 0,
+}: {
   children: ReactNode
   direction?: 'left' | 'right' | 'top' | 'bottom'
-  delay?: number 
+  delay?: number
 }) {
   const initialPosition = {
     left: { x: -50, y: 0 },
@@ -84,13 +78,7 @@ export function SlideIn({
 /**
  * 缩放动画组件
  */
-export function ScaleIn({ 
-  children, 
-  delay = 0 
-}: { 
-  children: ReactNode
-  delay?: number 
-}) {
+export function ScaleIn({ children, delay = 0 }: { children: ReactNode; delay?: number }) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
@@ -105,10 +93,10 @@ export function ScaleIn({
 /**
  * 交错动画容器
  */
-export function StaggerContainer({ 
+export function StaggerContainer({
   children,
-  staggerDelay = 0.1
-}: { 
+  staggerDelay = 0.1,
+}: {
   children: ReactNode
   staggerDelay?: number
 }) {
@@ -151,21 +139,17 @@ export function StaggerItem({ children }: { children: ReactNode }) {
 /**
  * 脉冲发光动画组件
  */
-export function GlowPulse({ 
+export function GlowPulse({
   children,
-  color = 'var(--color-primary)'
-}: { 
+  color = 'var(--color-primary)',
+}: {
   children: ReactNode
   color?: string
 }) {
   return (
     <motion.div
       animate={{
-        boxShadow: [
-          `0 0 5px ${color}`,
-          `0 0 20px ${color}`,
-          `0 0 5px ${color}`,
-        ],
+        boxShadow: [`0 0 5px ${color}`, `0 0 20px ${color}`, `0 0 5px ${color}`],
       }}
       transition={{
         duration: 2,

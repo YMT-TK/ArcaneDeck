@@ -166,7 +166,7 @@ function EditorToolbar({ editor, onSave }: EditorToolbarProps) {
 
   return (
     <div className="editor-toolbar">
-      {toolbarGroups.map((group) => (
+      {toolbarGroups.map(group => (
         <div key={group.name} className="toolbar-group">
           {group.items.map((item, index) => (
             <button
@@ -183,11 +183,7 @@ function EditorToolbar({ editor, onSave }: EditorToolbarProps) {
       ))}
       {onSave && (
         <div className="toolbar-group ml-auto">
-          <button
-            onClick={onSave}
-            title="保存 (Ctrl+S)"
-            className="toolbar-button save-button"
-          >
+          <button onClick={onSave} title="保存 (Ctrl+S)" className="toolbar-button save-button">
             <Save size={18} />
             <span className="ml-1">保存</span>
           </button>

@@ -93,7 +93,7 @@ function Sidebar() {
           {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
         </button>
         {/* 回收站按钮 */}
-        <button 
+        <button
           className={`footer-link ${showRecycleBin ? 'footer-link-active' : ''}`}
           onClick={toggleRecycleBin}
           title="回收站"

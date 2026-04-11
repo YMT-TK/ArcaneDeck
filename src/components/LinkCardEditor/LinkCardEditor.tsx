@@ -13,7 +13,12 @@ type LinkCardEditorProps = {
  * 链接卡片编辑器组件
  * @description 用于创建和编辑链接类型的卡片
  */
-function LinkCardEditor({ initialUrl = '', initialTitle = '', onSave, onCancel }: LinkCardEditorProps) {
+function LinkCardEditor({
+  initialUrl = '',
+  initialTitle = '',
+  onSave,
+  onCancel,
+}: LinkCardEditorProps) {
   const [url, setUrl] = useState(initialUrl)
   const [title, setTitle] = useState(initialTitle)
   const [favicon, setFavicon] = useState<string | undefined>()
@@ -120,7 +125,7 @@ function LinkCardEditor({ initialUrl = '', initialTitle = '', onSave, onCancel }
             <input
               type="url"
               value={url}
-              onChange={(e) => handleUrlChange(e.target.value)}
+              onChange={e => handleUrlChange(e.target.value)}
               onBlur={handleUrlBlur}
               placeholder="https://example.com"
               className={error ? 'error' : ''}
@@ -135,7 +140,7 @@ function LinkCardEditor({ initialUrl = '', initialTitle = '', onSave, onCancel }
           <input
             type="text"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={e => setTitle(e.target.value)}
             placeholder="网站标题（可选）"
           />
         </div>

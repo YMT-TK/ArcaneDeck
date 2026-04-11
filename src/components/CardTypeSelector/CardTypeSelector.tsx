@@ -84,7 +84,7 @@ function CardTypeSelector({ isOpen, onClose, onSelect }: CardTypeSelectorProps) 
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            onClick={(e) => e.stopPropagation()}
+            onClick={e => e.stopPropagation()}
           >
             <div className="type-selector-header">
               <h2 className="type-selector-title">选择卡片类型</h2>
@@ -94,7 +94,7 @@ function CardTypeSelector({ isOpen, onClose, onSelect }: CardTypeSelectorProps) 
             </div>
 
             <div className="type-selector-grid">
-              {CARD_TYPES.map((option) => {
+              {CARD_TYPES.map(option => {
                 const Icon = option.icon
                 const isHovered = hoveredType === option.type
 

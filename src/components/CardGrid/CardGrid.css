@@ -304,52 +304,52 @@
   overflow: auto;
 }
 
-[data-theme="scifi"] .add-card-button,
-[data-theme="scifi"] .empty-add-button {
+[data-theme='scifi'] .add-card-button,
+[data-theme='scifi'] .empty-add-button {
   background: linear-gradient(135deg, #00f0ff, #b967ff);
 }
 
-[data-theme="scifi"] .view-mode-btn.active {
+[data-theme='scifi'] .view-mode-btn.active {
   background: linear-gradient(135deg, #00f0ff, #b967ff);
 }
 
-[data-theme="scifi"] .section-label {
+[data-theme='scifi'] .section-label {
   background: rgba(0, 240, 255, 0.1);
   color: #00f0ff;
 }
 
-[data-theme="scifi"] .editor-overlay {
+[data-theme='scifi'] .editor-overlay {
   background: rgba(0, 0, 20, 0.8);
 }
 
-[data-theme="magic"] .add-card-button,
-[data-theme="magic"] .empty-add-button {
+[data-theme='magic'] .add-card-button,
+[data-theme='magic'] .empty-add-button {
   background: linear-gradient(135deg, #d4af37, #8b0000);
 }
 
-[data-theme="magic"] .view-mode-btn.active {
+[data-theme='magic'] .view-mode-btn.active {
   background: linear-gradient(135deg, #d4af37, #8b0000);
 }
 
-[data-theme="magic"] .section-label {
+[data-theme='magic'] .section-label {
   background: rgba(212, 175, 55, 0.1);
   color: #d4af37;
 }
 
-[data-theme="magic"] .editor-overlay {
+[data-theme='magic'] .editor-overlay {
   background: rgba(20, 10, 0, 0.8);
 }
 
-[data-theme="minimal"] .add-card-button,
-[data-theme="minimal"] .empty-add-button {
+[data-theme='minimal'] .add-card-button,
+[data-theme='minimal'] .empty-add-button {
   background: #374151;
 }
 
-[data-theme="minimal"] .view-mode-btn.active {
+[data-theme='minimal'] .view-mode-btn.active {
   background: #374151;
 }
 
-[data-theme="minimal"] .editor-overlay {
+[data-theme='minimal'] .editor-overlay {
   background: rgba(0, 0, 0, 0.4);
 }
 

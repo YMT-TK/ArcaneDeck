@@ -13,7 +13,12 @@ type ImageCardEditorProps = {
  * 图文卡片编辑器组件
  * @description 用于创建和编辑图文类型的卡片
  */
-function ImageCardEditor({ initialImagePath = '', initialCaption = '', onSave, onCancel }: ImageCardEditorProps) {
+function ImageCardEditor({
+  initialImagePath = '',
+  initialCaption = '',
+  onSave,
+  onCancel,
+}: ImageCardEditorProps) {
   const [imagePath, setImagePath] = useState(initialImagePath)
   const [caption, setCaption] = useState(initialCaption)
   const [isDragging, setIsDragging] = useState(false)
@@ -179,7 +184,7 @@ function ImageCardEditor({ initialImagePath = '', initialCaption = '', onSave, o
           <label>说明文字</label>
           <textarea
             value={caption}
-            onChange={(e) => setCaption(e.target.value)}
+            onChange={e => setCaption(e.target.value)}
             placeholder="添加图片说明（可选）"
             rows={3}
           />

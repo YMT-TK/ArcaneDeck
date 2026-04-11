@@ -19,7 +19,7 @@ function App() {
         // 初始化应用配置
         const savedTheme = localStorage.getItem('arcanedeck-theme') || 'scifi'
         document.documentElement.setAttribute('data-theme', savedTheme)
-        
+
         // 模拟加载延迟
         setTimeout(() => {
           setIsLoading(false)

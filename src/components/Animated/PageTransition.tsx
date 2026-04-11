@@ -30,13 +30,7 @@ export function PageTransition({ children, isActive }: PageTransitionProps) {
 /**
  * 模态框动画组件
  */
-export function ModalTransition({ 
-  children, 
-  isOpen 
-}: { 
-  children: ReactNode
-  isOpen: boolean 
-}) {
+export function ModalTransition({ children, isOpen }: { children: ReactNode; isOpen: boolean }) {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -94,10 +88,10 @@ export const containerVariants = {
 /**
  * 拖拽动画组件
  */
-export function DraggableCard({ 
+export function DraggableCard({
   children,
-  onDragEnd
-}: { 
+  onDragEnd,
+}: {
   children: ReactNode
   onDragEnd?: (event: MouseEvent | TouchEvent | PointerEvent, info: any) => void
 }) {
@@ -118,19 +112,9 @@ export function DraggableCard({
 /**
  * 悬浮效果组件
  */
-export function HoverScale({ 
-  children,
-  scale = 1.02 
-}: { 
-  children: ReactNode
-  scale?: number
-}) {
+export function HoverScale({ children, scale = 1.02 }: { children: ReactNode; scale?: number }) {
   return (
-    <motion.div
-      whileHover={{ scale }}
-      whileTap={{ scale: 0.98 }}
-      transition={{ duration: 0.2 }}
-    >
+    <motion.div whileHover={{ scale }} whileTap={{ scale: 0.98 }} transition={{ duration: 0.2 }}>
       {children}
     </motion.div>
   )

@@ -112,7 +112,7 @@ function TabBar({
     <div className="tab-bar">
       <div className="tabs-container">
         <AnimatePresence mode="popLayout">
-          {tabs.map((tab) => (
+          {tabs.map(tab => (
             <motion.div
               key={tab.id}
               className={`tab-item ${activeTabId === tab.id ? 'active' : ''}`}
@@ -126,8 +126,8 @@ function TabBar({
                   <input
                     type="text"
                     value={editingName}
-                    onChange={(e) => setEditingName(e.target.value)}
-                    onKeyDown={(e) => {
+                    onChange={e => setEditingName(e.target.value)}
+                    onKeyDown={e => {
                       if (e.key === 'Enter') handleSaveEdit()
                       if (e.key === 'Escape') handleCancelEdit()
                     }}
@@ -150,7 +150,7 @@ function TabBar({
                   </button>
                   <button
                     className="tab-close"
-                    onClick={(e) => {
+                    onClick={e => {
                       e.stopPropagation()
                       handleDeleteRequest(tab)
                     }}
@@ -172,8 +172,8 @@ function TabBar({
             <input
               type="text"
               value={newTabName}
-              onChange={(e) => setNewTabName(e.target.value)}
-              onKeyDown={(e) => {
+              onChange={e => setNewTabName(e.target.value)}
+              onKeyDown={e => {
                 if (e.key === 'Enter') handleSaveNewTab()
                 if (e.key === 'Escape') handleCancelCreate()
               }}
@@ -202,22 +202,18 @@ function TabBar({
           title="回收站"
         >
           <Trash2 size={16} />
-          {recycleBinCount > 0 && (
-            <span className="recycle-bin-count">{recycleBinCount}</span>
-          )}
+          {recycleBinCount > 0 && <span className="recycle-bin-count">{recycleBinCount}</span>}
         </button>
       )}
 
       {deleteConfirmTab && (
         <div className="delete-confirm-overlay" onClick={handleCancelDelete}>
-          <div className="delete-confirm-dialog" onClick={(e) => e.stopPropagation()}>
+          <div className="delete-confirm-dialog" onClick={e => e.stopPropagation()}>
             <div className="delete-confirm-icon">
               <AlertTriangle size={48} />
             </div>
             <h3 className="delete-confirm-title">确认删除 Tab</h3>
-            <p className="delete-confirm-message">
-              确定要删除 "{deleteConfirmTab.name}" 吗？
-            </p>
+            <p className="delete-confirm-message">确定要删除 "{deleteConfirmTab.name}" 吗？</p>
             {deleteConfirmTab.cardCount !== undefined && deleteConfirmTab.cardCount > 0 && (
               <p className="delete-confirm-warning">
                 该 Tab 下有 {deleteConfirmTab.cardCount} 张卡片，删除后卡片将移动到默认 Tab。

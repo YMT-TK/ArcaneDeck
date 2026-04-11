@@ -12,16 +12,16 @@ let prismaInstance: PrismaClient | undefined = undefined
 function getDatabasePath(): string {
   const userDataPath = app.getPath('userData')
   const dbDir = path.join(userDataPath, 'data')
-  
+
   if (!fs.existsSync(dbDir)) {
     fs.mkdirSync(dbDir, { recursive: true })
     console.log('[Database] Created database directory:', dbDir)
   }
-  
+
   const dbPath = path.join(dbDir, 'arcanedeck.db')
   console.log('[Database] Database file path:', dbPath)
   console.log('[Database] Database file exists:', fs.existsSync(dbPath))
-  
+
   return dbPath
 }
 
@@ -32,14 +32,40 @@ function getDatabasePath(): string {
 function setupPrismaEngine(): void {
   if (app.isPackaged) {
     const resourcesPath = process.resourcesPath
-    
+
     const possibleEnginePaths = [
-      path.join(resourcesPath, 'node_modules', '.prisma', 'client', 'query_engine-windows.dll.node'),
-      path.join(resourcesPath, 'app.asar.unpacked', 'node_modules', '.prisma', 'client', 'query_engine-windows.dll.node'),
-      path.join(resourcesPath, 'node_modules', '@prisma', 'engines', 'query_engine-windows.dll.node'),
-      path.join(resourcesPath, 'app.asar.unpacked', 'node_modules', '@prisma', 'engines', 'query_engine-windows.dll.node'),
+      path.join(
+        resourcesPath,
+        'node_modules',
+        '.prisma',
+        'client',
+        'query_engine-windows.dll.node'
+      ),
+      path.join(
+        resourcesPath,
+        'app.asar.unpacked',
+        'node_modules',
+        '.prisma',
+        'client',
+        'query_engine-windows.dll.node'
+      ),
+      path.join(
+        resourcesPath,
+        'node_modules',
+        '@prisma',
+        'engines',
+        'query_engine-windows.dll.node'
+      ),
+      path.join(
+        resourcesPath,
+        'app.asar.unpacked',
+        'node_modules',
+        '@prisma',
+        'engines',
+        'query_engine-windows.dll.node'
+      ),
     ]
-    
+
     for (const enginePath of possibleEnginePaths) {
       console.log('[Database] Checking engine path:', enginePath)
       if (fs.existsSync(enginePath)) {
@@ -48,10 +74,10 @@ function setupPrismaEngine(): void {
         return
       }
     }
-    
+
     console.error('[Database] Prisma engine not found in any location!')
     console.log('[Database] Resources path:', resourcesPath)
-    
+
     try {
       const files = fs.readdirSync(resourcesPath)
       console.log('[Database] Resources contents:', files)
@@ -67,7 +93,10 @@ function setupPrismaEngine(): void {
  */
 async function checkTableExists(prisma: PrismaClient): Promise<boolean> {
   try {
-    const result = await prisma.$queryRaw`SELECT name FROM sqlite_master WHERE type='table' AND name='Card'` as { name: string }[]
+    const result =
+      (await prisma.$queryRaw`SELECT name FROM sqlite_master WHERE type='table' AND name='Card'`) as {
+        name: string
+      }[]
     return result.length > 0
   } catch (error) {
     console.error('[Database] Failed to check table existence:', error)
@@ -81,7 +110,7 @@ async function checkTableExists(prisma: PrismaClient): Promise<boolean> {
  */
 async function createDatabaseSchema(prisma: PrismaClient): Promise<void> {
   console.log('[Database] Creating database schema...')
-  
+
   try {
     // 创建Tab表
     await prisma.$executeRaw`
@@ -165,19 +194,19 @@ async function syncDatabaseSchema(prisma: PrismaClient): Promise<void> {
     }
 
     // 表存在，检查并添加缺失的列
-    const tableInfo = await prisma.$queryRaw`PRAGMA table_info(Card)` as { name: string }[]
+    const tableInfo = (await prisma.$queryRaw`PRAGMA table_info(Card)`) as { name: string }[]
     const existingColumns = tableInfo.map(col => col.name)
-    
+
     const requiredColumns = ['pinned']
-    
+
     for (const column of requiredColumns) {
       if (!existingColumns.includes(column)) {
         console.log(`[Database] Adding missing column: ${column}`)
-        
+
         if (column === 'pinned') {
           await prisma.$executeRaw`ALTER TABLE Card ADD COLUMN pinned BOOLEAN NOT NULL DEFAULT false`
         }
-        
+
         console.log(`[Database] Column ${column} added successfully`)
       }
     }
@@ -194,17 +223,17 @@ export async function initDatabase(): Promise<PrismaClient> {
   if (prismaInstance) {
     return prismaInstance
   }
-  
+
   setupPrismaEngine()
-  
+
   const dbPath = getDatabasePath()
-  
+
   // 将 Windows 路径转换为正斜杠格式，并添加 file: 前缀
   const normalizedPath = dbPath.replace(/\\/g, '/')
   const dbUrl = `file:${normalizedPath}`
-  
+
   process.env.DATABASE_URL = dbUrl
-  
+
   console.log('[Database] Database path:', dbPath)
   console.log('[Database] Normalized path:', normalizedPath)
   console.log('[Database] Database URL:', dbUrl)
@@ -212,7 +241,7 @@ export async function initDatabase(): Promise<PrismaClient> {
   console.log('[Database] Resources path:', process.resourcesPath)
   console.log('[Database] DATABASE_URL:', process.env.DATABASE_URL)
   console.log('[Database] PRISMA_QUERY_ENGINE_LIBRARY:', process.env.PRISMA_QUERY_ENGINE_LIBRARY)
-  
+
   // 测试目录是否可写
   try {
     const testFile = path.join(path.dirname(dbPath), 'test_write.tmp')
@@ -222,7 +251,7 @@ export async function initDatabase(): Promise<PrismaClient> {
   } catch (e) {
     console.error('[Database] Directory is NOT writable:', e)
   }
-  
+
   try {
     prismaInstance = new PrismaClient({
       log: ['query', 'error', 'warn'],
@@ -232,12 +261,12 @@ export async function initDatabase(): Promise<PrismaClient> {
         },
       },
     })
-    
+
     await prismaInstance.$connect()
     console.log('[Database] Connected successfully')
-    
+
     await syncDatabaseSchema(prismaInstance)
-    
+
     return prismaInstance
   } catch (error) {
     console.error('[Database] Failed to initialize:', error)
@@ -265,16 +294,16 @@ export function setCustomDataPath(customPath: string): boolean {
     if (!fs.existsSync(customPath)) {
       fs.mkdirSync(customPath, { recursive: true })
     }
-    
+
     const dbPath = path.join(customPath, 'arcanedeck.db')
     const normalizedPath = dbPath.replace(/\\/g, '/')
     const dbUrl = `file:${normalizedPath}`
-    
+
     process.env.DATABASE_URL = dbUrl
-    
+
     console.log('[Database] Custom data path set:', customPath)
     console.log('[Database] New database path:', dbPath)
-    
+
     return true
   } catch (error) {
     console.error('[Database] Failed to set custom data path:', error)
@@ -323,7 +352,7 @@ export class DatabaseService {
   static async checkIntegrity(): Promise<{ ok: boolean; errors: string[] }> {
     try {
       const db = await getPrisma()
-      const result = await db.$queryRaw`PRAGMA integrity_check` as { integrity_check: string }[]
+      const result = (await db.$queryRaw`PRAGMA integrity_check`) as { integrity_check: string }[]
       const status = result[0]?.integrity_check
       return {
         ok: status === 'ok',

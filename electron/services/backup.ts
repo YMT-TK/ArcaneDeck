@@ -13,11 +13,11 @@ export class BackupService {
   private static getBackupDir(): string {
     const userDataPath = app.getPath('userData')
     const backupDir = path.join(userDataPath, 'backups')
-    
+
     if (!fs.existsSync(backupDir)) {
       fs.mkdirSync(backupDir, { recursive: true })
     }
-    
+
     return backupDir
   }
 
@@ -27,7 +27,7 @@ export class BackupService {
   static async createBackup(customPath?: string): Promise<string> {
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
     const backupFileName = `arcanedeck_backup_${timestamp}.zip`
-    const backupPath = customPath 
+    const backupPath = customPath
       ? path.join(customPath, backupFileName)
       : path.join(this.getBackupDir(), backupFileName)
 
@@ -39,7 +39,7 @@ export class BackupService {
         resolve(backupPath)
       })
 
-      archive.on('error', (err) => {
+      archive.on('error', err => {
         reject(err)
       })
 
@@ -116,9 +116,11 @@ export class BackupService {
   /**
    * 获取备份列表
    */
-  static async getBackupList(): Promise<{ name: string; path: string; size: number; createdAt: Date }[]> {
+  static async getBackupList(): Promise<
+    { name: string; path: string; size: number; createdAt: Date }[]
+  > {
     const backupDir = this.getBackupDir()
-    
+
     if (!fs.existsSync(backupDir)) {
       return []
     }
@@ -176,9 +178,7 @@ export class BackupService {
     const result = await dialog.showSaveDialog({
       title: '选择备份保存位置',
       defaultPath: `arcanedeck_backup_${Date.now()}.zip`,
-      filters: [
-        { name: 'ZIP压缩包', extensions: ['zip'] },
-      ],
+      filters: [{ name: 'ZIP压缩包', extensions: ['zip'] }],
     })
 
     return result.filePath || null
@@ -190,9 +190,7 @@ export class BackupService {
   static async selectRestoreFile(): Promise<string | null> {
     const result = await dialog.showOpenDialog({
       title: '选择备份文件',
-      filters: [
-        { name: 'ZIP压缩包', extensions: ['zip'] },
-      ],
+      filters: [{ name: 'ZIP压缩包', extensions: ['zip'] }],
       properties: ['openFile'],
     })
 

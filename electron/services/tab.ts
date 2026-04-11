@@ -13,7 +13,7 @@ export class TabService {
   static async create(name: string): Promise<Tab> {
     const prisma = await getPrisma()
     const sanitizedName = this.sanitizeInput(name)
-    
+
     const maxPosition = await prisma.tab.aggregate({
       _max: { position: true },
     })
@@ -34,7 +34,7 @@ export class TabService {
   static async update(id: string, name: string): Promise<Tab> {
     const prisma = await getPrisma()
     const sanitizedName = this.sanitizeInput(name)
-    
+
     return prisma.tab.update({
       where: { id },
       data: { name: sanitizedName },
@@ -46,7 +46,7 @@ export class TabService {
    */
   static async delete(id: string): Promise<void> {
     const prisma = await getPrisma()
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async tx => {
       await tx.card.updateMany({
         where: { tabId: id },
         data: { tabId: null },

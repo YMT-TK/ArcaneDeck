@@ -173,37 +173,37 @@
   color: var(--color-text-muted);
 }
 
-[data-theme="scifi"] .editor-container {
+[data-theme='scifi'] .editor-container {
   border-color: rgba(0, 240, 255, 0.2);
   box-shadow: 0 0 20px rgba(0, 240, 255, 0.05);
 }
 
-[data-theme="scifi"] .toolbar-button.active {
+[data-theme='scifi'] .toolbar-button.active {
   background: linear-gradient(135deg, #00f0ff, #b967ff);
 }
 
-[data-theme="scifi"] .editor-content .ProseMirror:focus {
+[data-theme='scifi'] .editor-content .ProseMirror:focus {
   box-shadow: inset 0 0 10px rgba(0, 240, 255, 0.1);
 }
 
-[data-theme="magic"] .editor-container {
+[data-theme='magic'] .editor-container {
   border-color: rgba(212, 175, 55, 0.3);
   box-shadow: 0 0 20px rgba(212, 175, 55, 0.05);
 }
 
-[data-theme="magic"] .toolbar-button.active {
+[data-theme='magic'] .toolbar-button.active {
   background: linear-gradient(135deg, #d4af37, #8b0000);
 }
 
-[data-theme="magic"] .editor-content .ProseMirror blockquote {
+[data-theme='magic'] .editor-content .ProseMirror blockquote {
   border-left-color: #d4af37;
 }
 
-[data-theme="minimal"] .editor-container {
+[data-theme='minimal'] .editor-container {
   border-color: #e5e7eb;
 }
 
-[data-theme="minimal"] .toolbar-button.active {
+[data-theme='minimal'] .toolbar-button.active {
   background: #374151;
   color: white;
 }

@@ -1,6 +1,16 @@
 import { useEffect, useCallback, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Sparkles, BookOpen, Minus, FolderOpen, Palette, Info, Download, Type } from 'lucide-react'
+import {
+  X,
+  Sparkles,
+  BookOpen,
+  Minus,
+  FolderOpen,
+  Palette,
+  Info,
+  Download,
+  Type,
+} from 'lucide-react'
 import { useSettingsStore, useConfigStore } from '../../stores'
 import { useTheme } from '../../contexts/ThemeContext'
 import './Settings.css'
@@ -23,11 +33,11 @@ interface ThemeOption {
  */
 function Settings() {
   const { isOpen, closeSettings } = useSettingsStore()
-  const { 
-    textFontSize: savedTextFontSize, 
-    setTextFontSize: saveTextFontSize, 
-    backupPath: savedBackupPath, 
-    setBackupPath: saveBackupPath
+  const {
+    textFontSize: savedTextFontSize,
+    setTextFontSize: saveTextFontSize,
+    backupPath: savedBackupPath,
+    setBackupPath: saveBackupPath,
   } = useConfigStore()
   const { theme: currentTheme, setTheme: applyTheme } = useTheme()
 
@@ -82,12 +92,19 @@ function Settings() {
    * 检测是否有未保存的更改
    */
   useEffect(() => {
-    const changed = 
+    const changed =
       previewTheme !== currentTheme ||
       previewTextFontSize !== savedTextFontSize ||
       previewBackupPath !== savedBackupPath
     setHasChanges(changed)
-  }, [previewTheme, previewTextFontSize, previewBackupPath, currentTheme, savedTextFontSize, savedBackupPath])
+  }, [
+    previewTheme,
+    previewTextFontSize,
+    previewBackupPath,
+    currentTheme,
+    savedTextFontSize,
+    savedBackupPath,
+  ])
 
   /**
    * 打开设置时重置预览状态
@@ -110,11 +127,14 @@ function Settings() {
   /**
    * ESC 键关闭弹窗
    */
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (e.key === 'Escape' && isOpen) {
-      handleClose()
-    }
-  }, [isOpen])
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        handleClose()
+      }
+    },
+    [isOpen]
+  )
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown)
@@ -188,7 +208,7 @@ function Settings() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ duration: 0.3, ease: 'easeOut' }}
-            onClick={(e) => e.stopPropagation()}
+            onClick={e => e.stopPropagation()}
           >
             {/* 左侧页面：核心配置 */}
             <div className="settings-left">
@@ -205,16 +225,13 @@ function Settings() {
                     主题风格
                   </h3>
                   <div className="theme-grid">
-                    {themes.map((t) => (
+                    {themes.map(t => (
                       <button
                         key={t.id}
                         className={`theme-card ${previewTheme === t.id ? 'theme-card-active' : ''}`}
                         onClick={() => setPreviewTheme(t.id)}
                       >
-                        <div 
-                          className="theme-preview"
-                          style={{ background: t.previewBg }}
-                        >
+                        <div className="theme-preview" style={{ background: t.previewBg }}>
                           {t.previewText && (
                             <span className="theme-preview-text">{t.previewText}</span>
                           )}
@@ -266,7 +283,9 @@ function Settings() {
                     <span className="font-label">大</span>
                     <span className="font-value">{previewTextFontSize}px</span>
                   </div>
-                  <p className="section-hint">调整便签、链接、图文卡片的文本大小（笔记文档不受影响）</p>
+                  <p className="section-hint">
+                    调整便签、链接、图文卡片的文本大小（笔记文档不受影响）
+                  </p>
                 </section>
               </div>
             </div>
@@ -318,18 +337,15 @@ function Settings() {
 
                 {/* 操作按钮 */}
                 <footer className="settings-footer">
-                  <button 
-                    className="save-btn" 
+                  <button
+                    className="save-btn"
                     onClick={handleSave}
                     disabled={!hasChanges}
                     style={{ opacity: hasChanges ? 1 : 0.5 }}
                   >
                     <span>{hasChanges ? '保存设置' : '未修改'}</span>
                   </button>
-                  <button 
-                    className="reset-btn"
-                    onClick={handleReset}
-                  >
+                  <button className="reset-btn" onClick={handleReset}>
                     恢复默认
                   </button>
                 </footer>

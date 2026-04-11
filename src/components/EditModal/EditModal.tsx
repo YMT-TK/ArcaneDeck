@@ -1,5 +1,15 @@
 import { useEffect, useState } from 'react'
-import { X, Gamepad2, Film, BookOpen, MoreHorizontal, Sparkles, Wand2, Eraser, Tag } from 'lucide-react'
+import {
+  X,
+  Gamepad2,
+  Film,
+  BookOpen,
+  MoreHorizontal,
+  Sparkles,
+  Wand2,
+  Eraser,
+  Tag,
+} from 'lucide-react'
 import { useEditModalStore, useCardStore } from '../../stores'
 import TiptapEditor from '../Editor/TiptapEditor'
 import './EditModal.css'
@@ -21,7 +31,7 @@ const websiteTypes = [
 const EditModal = () => {
   const { isOpen, cardId, cardType, isNew, closeEditModal } = useEditModalStore()
   const { cards, updateCard, addCard } = useCardStore()
-  
+
   const [title, setTitle] = useState('')
   const [url, setUrl] = useState('')
   const [favicon, setFavicon] = useState('')
@@ -84,7 +94,7 @@ const EditModal = () => {
    */
   const fetchFavicon = async () => {
     if (!url) return
-    
+
     setIsFetchingFavicon(true)
     try {
       const result = await window.electronAPI.attachment.fetchFavicon(url)
@@ -144,7 +154,11 @@ const EditModal = () => {
       if (isNew) {
         try {
           const newCard = await window.electronAPI.card.create({
-            title: title || (url ? new URL(url.startsWith('http') ? url : `https://${url}`).hostname : '未命名链接'),
+            title:
+              title ||
+              (url
+                ? new URL(url.startsWith('http') ? url : `https://${url}`).hostname
+                : '未命名链接'),
             content: url,
             type: 'link',
             tabId: null,
@@ -249,25 +263,40 @@ const EditModal = () => {
    */
   const renderLinkForm = () => (
     <>
-      <div className="flex-1 p-8 md:p-12 border-r border-primary/5" style={{ borderColor: 'rgba(67, 0, 0, 0.05)' }}>
+      <div
+        className="flex-1 p-8 md:p-12 border-r border-primary/5"
+        style={{ borderColor: 'rgba(67, 0, 0, 0.05)' }}
+      >
         <div className="mb-8">
-          <h2 className="font-headline text-3xl italic mb-2" style={{ fontFamily: 'Georgia, serif', color: '#430000' }}>
+          <h2
+            className="font-headline text-3xl italic mb-2"
+            style={{ fontFamily: 'Georgia, serif', color: '#430000' }}
+          >
             {isNew ? '创建链接' : '编辑链接'}
           </h2>
           <p className="text-sm italic" style={{ fontFamily: 'Georgia, serif', color: '#544241' }}>
             将数字世界的精髓融入卡片之中.
           </p>
         </div>
-        <form className="space-y-8" onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
+        <form
+          className="space-y-8"
+          onSubmit={e => {
+            e.preventDefault()
+            handleSave()
+          }}
+        >
           <div className="space-y-2">
-            <label className="text-lg italic flex items-center gap-2" style={{ fontFamily: 'Georgia, serif', color: '#430000' }}>
+            <label
+              className="text-lg italic flex items-center gap-2"
+              style={{ fontFamily: 'Georgia, serif', color: '#430000' }}
+            >
               <span>📜</span>
               网站名称
             </label>
             <input
               type="text"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={e => setTitle(e.target.value)}
               placeholder="The Whisper of Forgotten Oak"
               className="w-full bg-transparent border-b focus:ring-0 outline-none py-2 font-body placeholder:text-outline/40 transition-colors"
               style={{
@@ -279,14 +308,17 @@ const EditModal = () => {
           </div>
 
           <div className="space-y-2">
-            <label className="text-lg italic flex items-center gap-2" style={{ fontFamily: 'Georgia, serif', color: '#430000' }}>
+            <label
+              className="text-lg italic flex items-center gap-2"
+              style={{ fontFamily: 'Georgia, serif', color: '#430000' }}
+            >
               <span>🔗</span>
               网站网址
             </label>
             <input
               type="text"
               value={url}
-              onChange={(e) => setUrl(e.target.value)}
+              onChange={e => setUrl(e.target.value)}
               placeholder="https://ancient-manuscripts.io/scroll-01"
               className="w-full bg-transparent border-b focus:ring-0 outline-none py-2 font-body placeholder:text-outline/40 transition-colors"
               style={{
@@ -298,11 +330,14 @@ const EditModal = () => {
           </div>
 
           <div className="space-y-4">
-            <label className="text-lg italic" style={{ fontFamily: 'Georgia, serif', color: '#430000' }}>
+            <label
+              className="text-lg italic"
+              style={{ fontFamily: 'Georgia, serif', color: '#430000' }}
+            >
               网站类型
             </label>
             <div className="flex flex-wrap gap-4">
-              {websiteTypes.map((type) => {
+              {websiteTypes.map(type => {
                 const Icon = type.icon
                 const isSelected = selectedType === type.id
                 return (
@@ -329,9 +364,15 @@ const EditModal = () => {
         </form>
       </div>
 
-      <div className="w-full md:w-80 p-8 flex flex-col items-center justify-between gap-8" style={{ backgroundColor: '#fcecd2' }}>
+      <div
+        className="w-full md:w-80 p-8 flex flex-col items-center justify-between gap-8"
+        style={{ backgroundColor: '#fcecd2' }}
+      >
         <div className="text-center">
-          <h3 className="text-xl italic mb-4" style={{ fontFamily: 'Georgia, serif', color: '#430000' }}>
+          <h3
+            className="text-xl italic mb-4"
+            style={{ fontFamily: 'Georgia, serif', color: '#430000' }}
+          >
             网站图标
           </h3>
           <div className="relative w-48 h-48 mx-auto">
@@ -365,26 +406,37 @@ const EditModal = () => {
                   <Wand2 size={32} style={{ color: 'rgba(255, 255, 255, 0.3)' }} />
                   <div
                     className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent pointer-events-none"
-                    style={{ background: 'linear-gradient(to top, rgba(67, 0, 0, 0.8), transparent)' }}
+                    style={{
+                      background: 'linear-gradient(to top, rgba(67, 0, 0, 0.8), transparent)',
+                    }}
                   ></div>
                   <div className="absolute bottom-6 left-0 right-0 px-4 text-center pointer-events-none">
                     <p
                       className="text-[10px] italic tracking-widest uppercase"
                       style={{ fontFamily: 'Georgia, serif', color: '#ffffff' }}
                     >
-                      {selectedType === 'entertainment' ? 'Entertainment' : selectedType === 'film' ? 'Film' : selectedType === 'study' ? 'Study' : 'Other'}
+                      {selectedType === 'entertainment'
+                        ? 'Entertainment'
+                        : selectedType === 'film'
+                          ? 'Film'
+                          : selectedType === 'study'
+                            ? 'Study'
+                            : 'Other'}
                     </p>
                     <p
                       className="text-[8px] truncate"
                       style={{ fontFamily: 'Georgia, serif', color: 'rgba(255, 255, 255, 0.6)' }}
                     >
-                      {url ? (() => {
-                        try {
-                          return new URL(url.startsWith('http') ? url : `https://${url}`).hostname
-                        } catch {
-                          return 'example.com'
-                        }
-                      })() : 'example.com'}
+                      {url
+                        ? (() => {
+                            try {
+                              return new URL(url.startsWith('http') ? url : `https://${url}`)
+                                .hostname
+                            } catch {
+                              return 'example.com'
+                            }
+                          })()
+                        : 'example.com'}
                     </p>
                   </div>
                 </>
@@ -395,16 +447,13 @@ const EditModal = () => {
             className="mt-6 text-xs italic leading-relaxed"
             style={{ fontFamily: 'Georgia, serif', color: '#544241' }}
           >
-            "The pool reflects the essence of the destination. If the link is true, the waters remain calm."
+            "The pool reflects the essence of the destination. If the link is true, the waters
+            remain calm."
           </p>
         </div>
 
         <div className="w-full space-y-4">
-          <button
-            type="button"
-            onClick={handleSave}
-            className="w-full relative group"
-          >
+          <button type="button" onClick={handleSave} className="w-full relative group">
             <div
               className="absolute inset-0 rounded-full blur-md opacity-20 group-hover:opacity-40 transition-opacity"
               style={{ backgroundColor: '#430000' }}
@@ -436,7 +485,10 @@ const EditModal = () => {
    * 渲染便签编辑表单
    */
   const renderNoteForm = () => (
-    <div className="relative w-full max-w-4xl max-h-[921px] flex flex-col overflow-hidden" style={{ backgroundColor: '#fff8f2' }}>
+    <div
+      className="relative w-full max-w-4xl max-h-[921px] flex flex-col overflow-hidden"
+      style={{ backgroundColor: '#fff8f2' }}
+    >
       <div className="relative p-8 pb-4">
         <div className="absolute top-4 right-8">
           <button
@@ -452,7 +504,7 @@ const EditModal = () => {
           placeholder="Title of the Memo..."
           type="text"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={e => setTitle(e.target.value)}
           style={{
             fontFamily: 'Georgia, serif',
             color: '#430000',
@@ -466,7 +518,7 @@ const EditModal = () => {
           className="w-full h-full min-h-[300px] bg-transparent border-none p-0 text-lg leading-relaxed focus:ring-0 resize-none"
           placeholder="Write your alchemical observations here..."
           value={noteContent}
-          onChange={(e) => setNoteContent(e.target.value)}
+          onChange={e => setNoteContent(e.target.value)}
           style={{
             fontFamily: 'Georgia, serif',
             color: '#221b0b',
@@ -474,21 +526,33 @@ const EditModal = () => {
         />
       </div>
 
-      <div className="relative p-8 border-t" style={{ backgroundColor: 'rgba(252, 236, 210, 0.5)', borderColor: 'rgba(218, 193, 191, 0.1)' }}>
+      <div
+        className="relative p-8 border-t"
+        style={{
+          backgroundColor: 'rgba(252, 236, 210, 0.5)',
+          borderColor: 'rgba(218, 193, 191, 0.1)',
+        }}
+      >
         <div className="flex flex-wrap items-center gap-4 mb-8">
-          <span className="text-sm italic flex items-center gap-1" style={{ fontFamily: 'Georgia, serif', color: 'rgba(67, 0, 0, 0.6)' }}>
+          <span
+            className="text-sm italic flex items-center gap-1"
+            style={{ fontFamily: 'Georgia, serif', color: 'rgba(67, 0, 0, 0.6)' }}
+          >
             <Tag size={18} />
             Sigils:
           </span>
           {tags.map((tag, index) => (
             <div key={index} className="relative flex items-center">
-              <span className="px-4 py-1.5 text-sm pr-6 shadow-sm" style={{
-                backgroundColor: '#a04100',
-                color: '#ffffff',
-                fontFamily: 'Georgia, serif',
-                fontStyle: 'italic',
-                clipPath: 'polygon(0% 0%, 100% 0%, 100% 50%, 85% 100%, 0% 100%)',
-              }}>
+              <span
+                className="px-4 py-1.5 text-sm pr-6 shadow-sm"
+                style={{
+                  backgroundColor: '#a04100',
+                  color: '#ffffff',
+                  fontFamily: 'Georgia, serif',
+                  fontStyle: 'italic',
+                  clipPath: 'polygon(0% 0%, 100% 0%, 100% 50%, 85% 100%, 0% 100%)',
+                }}
+              >
                 {tag}
               </span>
               <button
@@ -506,7 +570,7 @@ const EditModal = () => {
               placeholder="Add sigil..."
               type="text"
               value={tagInput}
-              onChange={(e) => setTagInput(e.target.value)}
+              onChange={e => setTagInput(e.target.value)}
               onKeyDown={handleAddTag}
               style={{
                 fontFamily: 'Georgia, serif',
@@ -543,7 +607,13 @@ const EditModal = () => {
                 boxShadow: '0 4px 15px rgba(67, 0, 0, 0.3)',
               }}
             >
-              <div className="absolute inset-0 opacity-50" style={{ background: 'linear-gradient(to right, #430000, transparent, rgba(255, 255, 255, 0.1))' }}></div>
+              <div
+                className="absolute inset-0 opacity-50"
+                style={{
+                  background:
+                    'linear-gradient(to right, #430000, transparent, rgba(255, 255, 255, 0.1))',
+                }}
+              ></div>
               <span className="relative flex items-center gap-2">
                 <Sparkles size={24} fill="currentColor" />
                 {isNew ? '创建便签' : '保存便签'}
@@ -559,7 +629,10 @@ const EditModal = () => {
    * 渲染笔记编辑表单
    */
   const renderDocForm = () => (
-    <div className="relative w-full max-w-4xl max-h-[921px] flex flex-col overflow-hidden" style={{ backgroundColor: '#fff8f2' }}>
+    <div
+      className="relative w-full max-w-4xl max-h-[921px] flex flex-col overflow-hidden"
+      style={{ backgroundColor: '#fff8f2' }}
+    >
       <div className="relative p-8 pb-4">
         <div className="absolute top-4 right-8">
           <button
@@ -575,7 +648,7 @@ const EditModal = () => {
           placeholder="Title of the Memo..."
           type="text"
           value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={e => setTitle(e.target.value)}
           style={{
             fontFamily: 'Georgia, serif',
             color: '#430000',
@@ -589,26 +662,38 @@ const EditModal = () => {
           <TiptapEditor
             content={docContent}
             placeholder="Write your alchemical observations here..."
-            onUpdate={(content) => setDocContent(content)}
+            onUpdate={content => setDocContent(content)}
           />
         </div>
       </div>
 
-      <div className="relative p-8 border-t" style={{ backgroundColor: 'rgba(252, 236, 210, 0.5)', borderColor: 'rgba(218, 193, 191, 0.1)' }}>
+      <div
+        className="relative p-8 border-t"
+        style={{
+          backgroundColor: 'rgba(252, 236, 210, 0.5)',
+          borderColor: 'rgba(218, 193, 191, 0.1)',
+        }}
+      >
         <div className="flex flex-wrap items-center gap-4 mb-8">
-          <span className="text-sm italic flex items-center gap-1" style={{ fontFamily: 'Georgia, serif', color: 'rgba(67, 0, 0, 0.6)' }}>
+          <span
+            className="text-sm italic flex items-center gap-1"
+            style={{ fontFamily: 'Georgia, serif', color: 'rgba(67, 0, 0, 0.6)' }}
+          >
             <Tag size={18} />
             Sigils:
           </span>
           {tags.map((tag, index) => (
             <div key={index} className="relative flex items-center">
-              <span className="px-4 py-1.5 text-sm pr-6 shadow-sm" style={{
-                backgroundColor: '#a04100',
-                color: '#ffffff',
-                fontFamily: 'Georgia, serif',
-                fontStyle: 'italic',
-                clipPath: 'polygon(0% 0%, 100% 0%, 100% 50%, 85% 100%, 0% 100%)',
-              }}>
+              <span
+                className="px-4 py-1.5 text-sm pr-6 shadow-sm"
+                style={{
+                  backgroundColor: '#a04100',
+                  color: '#ffffff',
+                  fontFamily: 'Georgia, serif',
+                  fontStyle: 'italic',
+                  clipPath: 'polygon(0% 0%, 100% 0%, 100% 50%, 85% 100%, 0% 100%)',
+                }}
+              >
                 {tag}
               </span>
               <button
@@ -626,7 +711,7 @@ const EditModal = () => {
               placeholder="Add sigil..."
               type="text"
               value={tagInput}
-              onChange={(e) => setTagInput(e.target.value)}
+              onChange={e => setTagInput(e.target.value)}
               onKeyDown={handleAddTag}
               style={{
                 fontFamily: 'Georgia, serif',
@@ -663,7 +748,13 @@ const EditModal = () => {
                 boxShadow: '0 4px 15px rgba(67, 0, 0, 0.3)',
               }}
             >
-              <div className="absolute inset-0 opacity-50" style={{ background: 'linear-gradient(to right, #430000, transparent, rgba(255, 255, 255, 0.1))' }}></div>
+              <div
+                className="absolute inset-0 opacity-50"
+                style={{
+                  background:
+                    'linear-gradient(to right, #430000, transparent, rgba(255, 255, 255, 0.1))',
+                }}
+              ></div>
               <span className="relative flex items-center gap-2">
                 <Sparkles size={24} fill="currentColor" />
                 {isNew ? '创建笔记' : '保存笔记'}
@@ -691,10 +782,16 @@ const EditModal = () => {
         return (
           <div className="flex-1 p-8 md:p-12">
             <div className="mb-8">
-              <h2 className="text-3xl italic mb-2" style={{ fontFamily: 'Georgia, serif', color: '#430000' }}>
+              <h2
+                className="text-3xl italic mb-2"
+                style={{ fontFamily: 'Georgia, serif', color: '#430000' }}
+              >
                 Edit Card
               </h2>
-              <p className="text-sm italic" style={{ fontFamily: 'Georgia, serif', color: '#544241' }}>
+              <p
+                className="text-sm italic"
+                style={{ fontFamily: 'Georgia, serif', color: '#544241' }}
+              >
                 Card ID: {cardId} | Type: {cardType}
               </p>
             </div>
@@ -710,8 +807,12 @@ const EditModal = () => {
 
   return (
     <div className="edit-modal-overlay" onClick={handleOverlayClick}>
-      {(cardType === 'note' || cardType === 'doc') ? (
-        cardType === 'note' ? renderNoteForm() : renderDocForm()
+      {cardType === 'note' || cardType === 'doc' ? (
+        cardType === 'note' ? (
+          renderNoteForm()
+        ) : (
+          renderDocForm()
+        )
       ) : (
         <div className="edit-modal-container">
           {renderContent()}

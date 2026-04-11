@@ -16,14 +16,15 @@ interface SidebarStore {
  */
 export const useSidebarStore = create<SidebarStore>()(
   persist(
-    (set) => ({
+    set => ({
       activeNavId: 'all',
       showRecycleBin: false,
       collapsed: false,
-      setActiveNavId: (id) => set({ activeNavId: id, showRecycleBin: false }),
-      setShowRecycleBin: (show) => set({ showRecycleBin: show }),
-      toggleRecycleBin: () => set((state) => ({ showRecycleBin: !state.showRecycleBin, activeNavId: '' })),
-      toggleCollapse: () => set((state) => ({ collapsed: !state.collapsed })),
+      setActiveNavId: id => set({ activeNavId: id, showRecycleBin: false }),
+      setShowRecycleBin: show => set({ showRecycleBin: show }),
+      toggleRecycleBin: () =>
+        set(state => ({ showRecycleBin: !state.showRecycleBin, activeNavId: '' })),
+      toggleCollapse: () => set(state => ({ collapsed: !state.collapsed })),
     }),
     {
       name: 'arcanedeck-sidebar',

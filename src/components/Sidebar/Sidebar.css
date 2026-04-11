@@ -65,7 +65,9 @@
   opacity: 1;
   width: 140px;
   overflow: hidden;
-  transition: width 0.3s ease, opacity 0.3s ease;
+  transition:
+    width 0.3s ease,
+    opacity 0.3s ease;
   white-space: nowrap;
 }
 
@@ -148,7 +150,9 @@
   opacity: 1;
   width: 100%;
   overflow: hidden;
-  transition: width 0.3s ease, opacity 0.3s ease;
+  transition:
+    width 0.3s ease,
+    opacity 0.3s ease;
   white-space: nowrap;
 }
 
@@ -243,7 +247,9 @@
   opacity: 1;
   width: auto;
   overflow: hidden;
-  transition: width 0.3s ease, opacity 0.3s ease;
+  transition:
+    width 0.3s ease,
+    opacity 0.3s ease;
   white-space: nowrap;
 }
 
@@ -284,22 +290,22 @@
    科幻主题侧边栏
    ======================================== */
 
-[data-theme="scifi"] .sidebar {
+[data-theme='scifi'] .sidebar {
   background: linear-gradient(180deg, var(--color-surface) 0%, var(--color-bg) 100%);
   border-right: 1px solid rgba(0, 240, 255, 0.2);
 }
 
-[data-theme="scifi"] .logo-icon {
+[data-theme='scifi'] .logo-icon {
   background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
   box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
 }
 
-[data-theme="scifi"] .nav-item-active {
+[data-theme='scifi'] .nav-item-active {
   background: linear-gradient(135deg, var(--color-primary), rgba(0, 240, 255, 0.8));
   box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
 }
 
-[data-theme="scifi"] .nav-item:hover:not(.nav-item-active) {
+[data-theme='scifi'] .nav-item:hover:not(.nav-item-active) {
   background: rgba(0, 240, 255, 0.1);
   border-left: 2px solid var(--color-primary);
 }
@@ -308,43 +314,43 @@
    魔法主题侧边栏
    ======================================== */
 
-[data-theme="magic"] .sidebar {
+[data-theme='magic'] .sidebar {
   background: linear-gradient(180deg, #2a1a1a 0%, #1a0f0f 100%);
   border-right: none;
   box-shadow: 4px 0 24px rgba(0, 0, 0, 0.3);
 }
 
-[data-theme="magic"] .sidebar-header {
+[data-theme='magic'] .sidebar-header {
   border-bottom-color: rgba(212, 175, 55, 0.2);
 }
 
-[data-theme="magic"] .logo-icon {
+[data-theme='magic'] .logo-icon {
   background: linear-gradient(135deg, #d4af37, #8b0000);
   border: 1px solid rgba(212, 175, 55, 0.3);
   box-shadow: 0 4px 12px rgba(139, 0, 0, 0.3);
 }
 
-[data-theme="magic"] .logo-title {
+[data-theme='magic'] .logo-title {
   color: #fff8f2;
 }
 
-[data-theme="magic"] .logo-subtitle {
+[data-theme='magic'] .logo-subtitle {
   color: rgba(255, 248, 242, 0.5);
 }
 
-[data-theme="magic"] .nav-item {
+[data-theme='magic'] .nav-item {
   color: rgba(255, 248, 242, 0.6);
   border-radius: 0;
   border-left: 3px solid transparent;
 }
 
-[data-theme="magic"] .nav-item:hover:not(.nav-item-active) {
+[data-theme='magic'] .nav-item:hover:not(.nav-item-active) {
   background: rgba(67, 0, 0, 0.3);
   color: #fff8f2;
   border-left-color: #a04100;
 }
 
-[data-theme="magic"] .nav-item-active {
+[data-theme='magic'] .nav-item-active {
   background: #fff8f2;
   color: #430000;
   border-left: 3px solid #a04100;
@@ -354,15 +360,15 @@
   padding-right: 20px;
 }
 
-[data-theme="magic"] .sidebar-footer {
+[data-theme='magic'] .sidebar-footer {
   border-top-color: rgba(255, 248, 242, 0.1);
 }
 
-[data-theme="magic"] .footer-link {
+[data-theme='magic'] .footer-link {
   color: rgba(255, 248, 242, 0.5);
 }
 
-[data-theme="magic"] .footer-link:hover {
+[data-theme='magic'] .footer-link:hover {
   background: rgba(67, 0, 0, 0.3);
   color: #fff8f2;
 }
@@ -371,52 +377,52 @@
    精简主题侧边栏
    ======================================== */
 
-[data-theme="minimal"] .sidebar {
+[data-theme='minimal'] .sidebar {
   background: #fafafa;
   border-right: 1px solid #e5e5e5;
 }
 
-[data-theme="minimal"] .sidebar-header {
+[data-theme='minimal'] .sidebar-header {
   border-bottom-color: #e5e5e5;
 }
 
-[data-theme="minimal"] .logo-icon {
+[data-theme='minimal'] .logo-icon {
   background: #1a1a1a;
   color: #ffffff;
   box-shadow: none;
 }
 
-[data-theme="minimal"] .logo-title {
+[data-theme='minimal'] .logo-title {
   color: #1a1a1a;
 }
 
-[data-theme="minimal"] .logo-subtitle {
+[data-theme='minimal'] .logo-subtitle {
   color: #737373;
 }
 
-[data-theme="minimal"] .nav-item {
+[data-theme='minimal'] .nav-item {
   color: #525252;
 }
 
-[data-theme="minimal"] .nav-item:hover:not(.nav-item-active) {
+[data-theme='minimal'] .nav-item:hover:not(.nav-item-active) {
   background: #f5f5f5;
   color: #1a1a1a;
 }
 
-[data-theme="minimal"] .nav-item-active {
+[data-theme='minimal'] .nav-item-active {
   background: #1a1a1a;
   color: #ffffff;
 }
 
-[data-theme="minimal"] .sidebar-footer {
+[data-theme='minimal'] .sidebar-footer {
   border-top-color: #e5e5e5;
 }
 
-[data-theme="minimal"] .footer-link {
+[data-theme='minimal'] .footer-link {
   color: #a3a3a3;
 }
 
-[data-theme="minimal"] .footer-link:hover {
+[data-theme='minimal'] .footer-link:hover {
   background: #f5f5f5;
   color: #525252;
 }

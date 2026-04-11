@@ -1,12 +1,6 @@
 import { forwardRef } from 'react'
 import { motion } from 'framer-motion'
-import {
-  Link,
-  Trash2,
-  ExternalLink,
-  Copy,
-  Pin,
-} from 'lucide-react'
+import { Link, Trash2, ExternalLink, Copy, Pin } from 'lucide-react'
 import './Card.css'
 
 /**
@@ -121,10 +115,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
     const bgClass = getNoteColor(id)
 
     return (
-      <div 
-        className={`unified-card torn-edge ${bgClass} ${rotation} group`}
-        data-pinned={pinned}
-      >
+      <div className={`unified-card torn-edge ${bgClass} ${rotation} group`} data-pinned={pinned}>
         <div className="card-inner">
           <div className="card-top">
             <span className="card-title-unified">{title || '无标题'}</span>
@@ -173,7 +164,15 @@ const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
     <>
       <div className="card-header">
         <div className="card-type-icon link-icon">
-          {favicon ? <img src={favicon.startsWith('file://') ? favicon : `file://${favicon}`} alt="" className="card-favicon" /> : <Link size={32} />}
+          {favicon ? (
+            <img
+              src={favicon.startsWith('file://') ? favicon : `file://${favicon}`}
+              alt=""
+              className="card-favicon"
+            />
+          ) : (
+            <Link size={32} />
+          )}
         </div>
         <div className="card-title-wrapper">
           <h3 className="card-title">

@@ -28,16 +28,16 @@ const defaultConfig: AppConfig = {
  */
 export const useConfigStore = create<ConfigStore>()(
   persist(
-    (set) => ({
+    set => ({
       ...defaultConfig,
-      
-      setTheme: (theme) => set({ theme }),
-      setLayout: (layout) => set({ layout }),
-      setFontSize: (fontSize) => set({ fontSize }),
-      setTextFontSize: (textFontSize) => set({ textFontSize }),
-      setAutoBackup: (autoBackup) => set({ autoBackup }),
-      setBackupPath: (backupPath) => set({ backupPath }),
-      setLanguage: (language) => set({ language }),
+
+      setTheme: theme => set({ theme }),
+      setLayout: layout => set({ layout }),
+      setFontSize: fontSize => set({ fontSize }),
+      setTextFontSize: textFontSize => set({ textFontSize }),
+      setAutoBackup: autoBackup => set({ autoBackup }),
+      setBackupPath: backupPath => set({ backupPath }),
+      setLanguage: language => set({ language }),
       resetConfig: () => set(defaultConfig),
     }),
     {

@@ -132,32 +132,32 @@
   text-align: center;
 }
 
-[data-theme="scifi"] .type-option-icon {
+[data-theme='scifi'] .type-option-icon {
   background: linear-gradient(135deg, #00f0ff, #b967ff);
 }
 
-[data-theme="scifi"] .type-option:hover,
-[data-theme="scifi"] .type-option.hovered {
+[data-theme='scifi'] .type-option:hover,
+[data-theme='scifi'] .type-option.hovered {
   border-color: #00f0ff;
   box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
 }
 
-[data-theme="magic"] .type-option-icon {
+[data-theme='magic'] .type-option-icon {
   background: linear-gradient(135deg, #d4af37, #8b0000);
 }
 
-[data-theme="magic"] .type-option:hover,
-[data-theme="magic"] .type-option.hovered {
+[data-theme='magic'] .type-option:hover,
+[data-theme='magic'] .type-option.hovered {
   border-color: #d4af37;
   box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
 }
 
-[data-theme="minimal"] .type-option-icon {
+[data-theme='minimal'] .type-option-icon {
   background: #374151;
 }
 
-[data-theme="minimal"] .type-option:hover,
-[data-theme="minimal"] .type-option.hovered {
+[data-theme='minimal'] .type-option:hover,
+[data-theme='minimal'] .type-option.hovered {
   border-color: #374151;
 }
 

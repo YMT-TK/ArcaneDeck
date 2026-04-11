@@ -91,7 +91,7 @@
   }
 }
 
-.link-field input[type="text"] {
+.link-field input[type='text'] {
   width: 100%;
   padding: 8px 12px;
   border: 1px solid var(--color-border);
@@ -103,11 +103,11 @@
   transition: border-color 0.2s ease;
 }
 
-.link-field input[type="text"]:focus {
+.link-field input[type='text']:focus {
   border-color: var(--color-primary);
 }
 
-.link-field input[type="text"]::placeholder {
+.link-field input[type='text']::placeholder {
   color: var(--color-text-muted);
 }
 
@@ -180,18 +180,18 @@
   cursor: not-allowed;
 }
 
-[data-theme="scifi"] .link-icon {
+[data-theme='scifi'] .link-icon {
   color: #00f0ff;
 }
 
-[data-theme="scifi"] .save-btn {
+[data-theme='scifi'] .save-btn {
   background: linear-gradient(135deg, #00f0ff, #b967ff);
 }
 
-[data-theme="magic"] .link-icon {
+[data-theme='magic'] .link-icon {
   color: #d4af37;
 }
 
-[data-theme="magic"] .save-btn {
+[data-theme='magic'] .save-btn {
   background: linear-gradient(135deg, #d4af37, #8b0000);
 }

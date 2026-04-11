@@ -1,7 +1,15 @@
 import { app, BrowserWindow, ipcMain, dialog, shell, Menu } from 'electron'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { CardService, TabService, BackupService, DatabaseService, AttachmentService, setCustomDataPath, initDatabase } from './services'
+import {
+  CardService,
+  TabService,
+  BackupService,
+  DatabaseService,
+  AttachmentService,
+  setCustomDataPath,
+  initDatabase,
+} from './services'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -104,13 +112,21 @@ app.on('before-quit', async () => {
 function registerIpcHandlers() {
   ipcMain.handle('app:getVersion', () => app.getVersion())
 
-  ipcMain.handle('app:getPath', (_event, name: string) => app.getPath(name as Parameters<typeof app.getPath>[0]))
+  ipcMain.handle('app:getPath', (_event, name: string) =>
+    app.getPath(name as Parameters<typeof app.getPath>[0])
+  )
 
-  ipcMain.handle('dialog:openFile', async (_event, options) => dialog.showOpenDialog(mainWindow!, options))
+  ipcMain.handle('dialog:openFile', async (_event, options) =>
+    dialog.showOpenDialog(mainWindow!, options)
+  )
 
-  ipcMain.handle('dialog:saveFile', async (_event, options) => dialog.showSaveDialog(mainWindow!, options))
+  ipcMain.handle('dialog:saveFile', async (_event, options) =>
+    dialog.showSaveDialog(mainWindow!, options)
+  )
 
-  ipcMain.handle('dialog:showMessage', async (_event, options) => dialog.showMessageBox(mainWindow!, options))
+  ipcMain.handle('dialog:showMessage', async (_event, options) =>
+    dialog.showMessageBox(mainWindow!, options)
+  )
 
   ipcMain.handle('dialog:selectFolder', async () => {
     const result = await dialog.showOpenDialog(mainWindow!, {
@@ -249,9 +265,12 @@ function registerIpcHandlers() {
     return BackupService.deleteBackup(backupPath)
   })
 
-  ipcMain.handle('attachment:saveImage', async (_event, file: { path: string; name: string; type: string }) => {
-    return AttachmentService.saveImage(file)
-  })
+  ipcMain.handle(
+    'attachment:saveImage',
+    async (_event, file: { path: string; name: string; type: string }) => {
+      return AttachmentService.saveImage(file)
+    }
+  )
 
   ipcMain.handle('attachment:saveBase64', async (_event, base64Data: string) => {
     return AttachmentService.saveBase64Image(base64Data)

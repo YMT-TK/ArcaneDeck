@@ -26,7 +26,11 @@ export class AttachmentService {
    * @param file 图片文件对象（来自渲染进程）
    * @returns 保存后的相对路径
    */
-  static async saveImage(file: { path: string; name: string; type: string }): Promise<{ path: string }> {
+  static async saveImage(file: {
+    path: string
+    name: string
+    type: string
+  }): Promise<{ path: string }> {
     this.init()
 
     const ext = path.extname(file.name) || '.jpg'
@@ -90,23 +94,31 @@ export class AttachmentService {
   private static async downloadImage(url: string): Promise<Buffer> {
     return new Promise((resolve, reject) => {
       const client = url.startsWith('https') ? https : http
-      client.get(url, (response) => {
-        if (response.statusCode === 301 || response.statusCode === 302 || response.statusCode === 303 || response.statusCode === 307 || response.statusCode === 308) {
-          if (response.headers.location) {
-            this.downloadImage(response.headers.location).then(resolve).catch(reject)
+      client
+        .get(url, response => {
+          if (
+            response.statusCode === 301 ||
+            response.statusCode === 302 ||
+            response.statusCode === 303 ||
+            response.statusCode === 307 ||
+            response.statusCode === 308
+          ) {
+            if (response.headers.location) {
+              this.downloadImage(response.headers.location).then(resolve).catch(reject)
+              return
+            }
+          }
+          if (response.statusCode !== 200) {
+            reject(new Error(`Failed to download image: ${response.statusCode}`))
             return
           }
-        }
-        if (response.statusCode !== 200) {
-          reject(new Error(`Failed to download image: ${response.statusCode}`))
-          return
-        }
 
-        const chunks: Buffer[] = []
-        response.on('data', (chunk) => chunks.push(chunk))
-        response.on('end', () => resolve(Buffer.concat(chunks)))
-        response.on('error', reject)
-      }).on('error', reject)
+          const chunks: Buffer[] = []
+          response.on('data', chunk => chunks.push(chunk))
+          response.on('end', () => resolve(Buffer.concat(chunks)))
+          response.on('error', reject)
+        })
+        .on('error', reject)
     })
   }
 

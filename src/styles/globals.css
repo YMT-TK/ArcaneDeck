@@ -33,7 +33,7 @@
    科幻主题 (Sci-Fi Theme)
    ======================================== */
 
-[data-theme="scifi"] {
+[data-theme='scifi'] {
   --color-primary: #00f0ff;
   --color-secondary: #b967ff;
   --color-accent: #00ff88;
@@ -47,18 +47,18 @@
   --color-border: #2a2f4a;
   --font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
   --font-family-mono: 'JetBrains Mono', 'Fira Code', monospace;
-  
+
   background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0a0e27 100%);
 }
 
-[data-theme="scifi"] .card {
+[data-theme='scifi'] .card {
   background: rgba(26, 31, 58, 0.8);
   border: 1px solid rgba(0, 240, 255, 0.3);
   box-shadow: 0 0 10px rgba(0, 240, 255, 0.1);
   backdrop-filter: blur(10px);
 }
 
-[data-theme="scifi"] .card:hover{
+[data-theme='scifi'] .card:hover {
   border-color: rgba(0, 240, 255, 0.6);
   box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
 }
@@ -67,7 +67,7 @@
    魔法主题 (Magic Theme)
    ======================================== */
 
-[data-theme="magic"]{
+[data-theme='magic'] {
   --color-primary: #d4af37;
   --color-secondary: #8b0000;
   --color-accent: #ff6b35;
@@ -81,17 +81,17 @@
   --color-border: #d4af37;
   --font-family: 'Crimson Text', Georgia, serif;
   --font-family-mono: 'Courier New', monospace;
-  
+
   background: linear-gradient(135deg, #f5e6d3 0%, #fff8e7 50%, #f5e6d3 100%);
 }
 
-[data-theme="magic"] .card{
+[data-theme='magic'] .card {
   background: rgba(255, 248, 231, 0.9);
   border: 2px solid rgba(212, 175, 55, 0.5);
   box-shadow: 0 2px 8px rgba(139, 0, 0, 0.1);
 }
 
-[data-theme="magic"] .card:hover{
+[data-theme='magic'] .card:hover {
   border-color: rgba(212, 175, 55, 0.8);
   box-shadow: 0 4px 16px rgba(212, 175, 55, 0.2);
 }
@@ -100,7 +100,7 @@
    精简主题 (Minimal Theme)
    ======================================== */
 
-[data-theme="minimal"]{
+[data-theme='minimal'] {
   --color-primary: #333333;
   --color-secondary: #666666;
   --color-accent: #000000;
@@ -114,27 +114,27 @@
   --color-border: #e0e0e0;
   --font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
   --font-family-mono: 'Courier New', monospace;
-  
+
   background: #ffffff;
 }
 
-[data-theme="minimal"].dark{
+[data-theme='minimal'].dark {
   --color-bg: #000000;
   --color-surface: #1a1a1a;
   --color-text: #ffffff;
   --color-text-secondary: #a0a0a0;
   --color-border: #333333;
-  
+
   background: #000000;
 }
 
-[data-theme="minimal"] .card{
+[data-theme='minimal'] .card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   box-shadow: none;
 }
 
-[data-theme="minimal"] .card:hover{
+[data-theme='minimal'] .card:hover {
   border-color: var(--color-primary);
 }
 
@@ -276,10 +276,11 @@ body {
 }
 
 @keyframes glow {
-  0%, 100% {
+  0%,
+  100% {
     box-shadow: 0 0 5px var(--color-primary);
   }
-  50%{
+  50% {
     box-shadow: 0 0 20px var(--color-primary);
   }
 }

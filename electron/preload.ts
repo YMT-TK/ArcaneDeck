@@ -9,14 +9,10 @@ const electronAPI = {
     getPath: (name: string) => ipcRenderer.invoke('app:getPath', name),
   },
   dialog: {
-    openFile: (options: any) => 
-      ipcRenderer.invoke('dialog:openFile', options),
-    saveFile: (options: any) => 
-      ipcRenderer.invoke('dialog:saveFile', options),
-    showMessage: (options: any) => 
-      ipcRenderer.invoke('dialog:showMessage', options),
-    selectFolder: () => 
-      ipcRenderer.invoke('dialog:selectFolder'),
+    openFile: (options: any) => ipcRenderer.invoke('dialog:openFile', options),
+    saveFile: (options: any) => ipcRenderer.invoke('dialog:saveFile', options),
+    showMessage: (options: any) => ipcRenderer.invoke('dialog:showMessage', options),
+    selectFolder: () => ipcRenderer.invoke('dialog:selectFolder'),
   },
   store: {
     get: (key: string) => ipcRenderer.invoke('store:get', key),
@@ -57,14 +53,11 @@ const electronAPI = {
     delete: (backupPath: string) => ipcRenderer.invoke('backup:delete', backupPath),
   },
   attachment: {
-    saveImage: (file: { path: string; name: string; type: string }) => 
+    saveImage: (file: { path: string; name: string; type: string }) =>
       ipcRenderer.invoke('attachment:saveImage', file),
-    saveBase64: (base64Data: string) => 
-      ipcRenderer.invoke('attachment:saveBase64', base64Data),
-    fetchFavicon: (url: string) => 
-      ipcRenderer.invoke('attachment:fetchFavicon', url),
-    delete: (filePath: string) => 
-      ipcRenderer.invoke('attachment:delete', filePath),
+    saveBase64: (base64Data: string) => ipcRenderer.invoke('attachment:saveBase64', base64Data),
+    fetchFavicon: (url: string) => ipcRenderer.invoke('attachment:fetchFavicon', url),
+    delete: (filePath: string) => ipcRenderer.invoke('attachment:delete', filePath),
   },
   file: {
     upload: (filePath: string) => ipcRenderer.invoke('file:upload', filePath),
