@@ -9,6 +9,7 @@ import {
   AttachmentService,
   setCustomDataPath,
   initDatabase,
+  isDataPathSetup,
 } from './services'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -16,6 +17,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const isDev = !app.isPackaged
 
 let mainWindow: BrowserWindow | null = null
+let isDatabaseInitialized = false
 
 function createWindow(): void {
   mainWindow = new BrowserWindow({
@@ -82,12 +84,6 @@ if (!gotTheLock) {
   })
 
   app.whenReady().then(async () => {
-    try {
-      await initDatabase()
-      console.log('[Main] Database initialized successfully')
-    } catch (error) {
-      console.error('[Main] Failed to initialize database:', error)
-    }
     createWindow()
     registerIpcHandlers()
 
@@ -169,9 +165,34 @@ function registerIpcHandlers() {
 
   ipcMain.handle('database:setPath', async (_event, customPath: string) => {
     try {
-      const success = setCustomDataPath(customPath)
+      const success = await setCustomDataPath(customPath)
       return { success }
     } catch (error) {
+      return { success: false, error: String(error) }
+    }
+  })
+
+  ipcMain.handle('database:isPathSetup', async () => {
+    return isDataPathSetup()
+  })
+
+  ipcMain.handle('database:init', async (_event, customPath?: string) => {
+    try {
+      if (customPath) {
+        await setCustomDataPath(customPath)
+      } else if (!isDataPathSetup()) {
+        return { success: false, error: '数据路径未设置' }
+      }
+      
+      if (!isDatabaseInitialized) {
+        await initDatabase()
+        isDatabaseInitialized = true
+        console.log('[Main] Database initialized successfully')
+      }
+      
+      return { success: true }
+    } catch (error) {
+      console.error('[Main] Failed to initialize database:', error)
       return { success: false, error: String(error) }
     }
   })

@@ -26,6 +26,8 @@ const electronAPI = {
     getStats: () => ipcRenderer.invoke('database:getStats'),
     getPath: () => ipcRenderer.invoke('database:getPath'),
     setPath: (customPath: string) => ipcRenderer.invoke('database:setPath', customPath),
+    isPathSetup: () => ipcRenderer.invoke('database:isPathSetup'),
+    init: (customPath?: string) => ipcRenderer.invoke('database:init', customPath),
   },
   card: {
     create: (data: unknown) => ipcRenderer.invoke('card:create', data),

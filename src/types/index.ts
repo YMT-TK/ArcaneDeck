@@ -21,6 +21,10 @@ export interface ElectronAPI {
     backup: () => Promise<string>
     restore: (filePath: string) => Promise<void>
     checkIntegrity: () => Promise<boolean>
+    getPath: () => Promise<string>
+    setPath: (customPath: string) => Promise<{ success: boolean; error?: string }>
+    isPathSetup: () => Promise<boolean>
+    init: (customPath?: string) => Promise<{ success: boolean; error?: string }>
   }
   card: {
     create: (data: CardCreateInput) => Promise<Card>

@@ -4,6 +4,7 @@ export {
   getCurrentDatabasePath,
   initDatabase,
   getPrisma,
+  isDataPathSetup,
 } from './database'
 export { CardService } from './card'
 export { TabService } from './tab'

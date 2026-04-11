@@ -199,9 +199,12 @@
   margin: 0;
   line-height: 1.5;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 5;
   -webkit-box-orient: vertical;
   overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: calc(1.5 * 0.875rem * 5);
+  max-height: calc(1.5 * 0.875rem * 5);
 }
 
 .card-footer {
@@ -381,8 +384,10 @@
 }
 
 .card-content-unified {
-  flex: 1;
+  flex: none;
   margin-bottom: 3rem;
+  min-height: calc(1.75 * 0.9375rem * 5);
+  max-height: calc(1.75 * 0.9375rem * 5);
 }
 
 .card-content-unified p {
@@ -393,6 +398,11 @@
   margin: 0;
   white-space: pre-wrap;
   word-break: break-word;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .card-bottom {
@@ -504,6 +514,13 @@
   color: var(--color-text-secondary);
   margin: 0;
   line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: calc(1.5 * 14px * 5);
+  max-height: calc(1.5 * 14px * 5);
 }
 
 .card-caption-input {

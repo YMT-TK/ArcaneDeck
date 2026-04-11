@@ -4,12 +4,82 @@ import path from 'path'
 import fs from 'fs'
 
 let prismaInstance: PrismaClient | undefined = undefined
+let customDataPath: string | null = null
+
+/**
+ * 获取配置文件路径
+ */
+function getConfigFilePath(): string {
+  const userDataPath = app.getPath('userData')
+  return path.join(userDataPath, 'data-path-config.json')
+}
+
+/**
+ * 加载保存的数据路径配置
+ */
+function loadDataPathConfig(): string | null {
+  try {
+    const configPath = getConfigFilePath()
+    if (fs.existsSync(configPath)) {
+      const config = JSON.parse(fs.readFileSync(configPath, 'utf-8'))
+      if (config.dataPath && fs.existsSync(config.dataPath)) {
+        customDataPath = config.dataPath
+        console.log('[Database] Loaded custom data path:', customDataPath)
+        return customDataPath
+      }
+    }
+  } catch (error) {
+    console.error('[Database] Failed to load data path config:', error)
+  }
+  return null
+}
+
+/**
+ * 保存数据路径配置
+ */
+function saveDataPathConfig(dataPath: string): void {
+  try {
+    const configPath = getConfigFilePath()
+    const configDir = path.dirname(configPath)
+    
+    if (!fs.existsSync(configDir)) {
+      fs.mkdirSync(configDir, { recursive: true })
+    }
+    
+    fs.writeFileSync(configPath, JSON.stringify({ dataPath }, null, 2))
+    customDataPath = dataPath
+    console.log('[Database] Saved data path config:', dataPath)
+  } catch (error) {
+    console.error('[Database] Failed to save data path config:', error)
+    throw error
+  }
+}
+
+/**
+ * 检查是否已设置数据路径
+ */
+export function isDataPathSetup(): boolean {
+  return loadDataPathConfig() !== null
+}
 
 /**
  * 获取数据库文件路径
  * @description 默认使用用户数据目录，确保可写权限
  */
 function getDatabasePath(): string {
+  const savedPath = customDataPath || loadDataPathConfig()
+  
+  if (savedPath) {
+    const dbDir = savedPath
+    if (!fs.existsSync(dbDir)) {
+      fs.mkdirSync(dbDir, { recursive: true })
+      console.log('[Database] Created custom database directory:', dbDir)
+    }
+    const dbPath = path.join(dbDir, 'arcanedeck.db')
+    console.log('[Database] Using custom database path:', dbPath)
+    return dbPath
+  }
+  
   const userDataPath = app.getPath('userData')
   const dbDir = path.join(userDataPath, 'data')
 
@@ -287,12 +357,20 @@ export async function getPrisma(): Promise<PrismaClient> {
 
 /**
  * 设置自定义数据存储路径
- * @description 允许用户自定义数据存储位置
+ * @description 允许用户自定义数据存储位置，保存配置并重新初始化数据库
  */
-export function setCustomDataPath(customPath: string): boolean {
+export async function setCustomDataPath(customPath: string): Promise<boolean> {
   try {
     if (!fs.existsSync(customPath)) {
       fs.mkdirSync(customPath, { recursive: true })
+    }
+
+    saveDataPathConfig(customPath)
+
+    const oldPrisma = prismaInstance
+    if (oldPrisma) {
+      await oldPrisma.$disconnect()
+      prismaInstance = undefined
     }
 
     const dbPath = path.join(customPath, 'arcanedeck.db')
@@ -303,6 +381,8 @@ export function setCustomDataPath(customPath: string): boolean {
 
     console.log('[Database] Custom data path set:', customPath)
     console.log('[Database] New database path:', dbPath)
+
+    await initDatabase()
 
     return true
   } catch (error) {

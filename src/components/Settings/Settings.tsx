@@ -10,8 +10,10 @@ import {
   Info,
   Download,
   Type,
+  RefreshCw,
+  Check,
 } from 'lucide-react'
-import { useSettingsStore, useConfigStore } from '../../stores'
+import { useSettingsStore, useConfigStore, useDataPathStore } from '../../stores'
 import { useTheme } from '../../contexts/ThemeContext'
 import './Settings.css'
 
@@ -39,13 +41,17 @@ function Settings() {
     backupPath: savedBackupPath,
     setBackupPath: saveBackupPath,
   } = useConfigStore()
+  const { dataPath, setDataPath } = useDataPathStore()
   const { theme: currentTheme, setTheme: applyTheme } = useTheme()
 
   const [previewTheme, setPreviewTheme] = useState<'scifi' | 'magic' | 'minimal'>(currentTheme)
   const [previewTextFontSize, setPreviewTextFontSize] = useState(savedTextFontSize)
   const [previewBackupPath, setPreviewBackupPath] = useState(savedBackupPath)
+  const [previewDataPath, setPreviewDataPath] = useState(dataPath || '')
   const [hasChanges, setHasChanges] = useState(false)
   const [appVersion, setAppVersion] = useState('v1.0.0')
+  const [isSavingPath, setIsSavingPath] = useState(false)
+  const [pathSaved, setPathSaved] = useState(false)
 
   /**
    * 获取应用版本号
@@ -114,8 +120,10 @@ function Settings() {
       setPreviewTheme(currentTheme)
       setPreviewTextFontSize(savedTextFontSize)
       setPreviewBackupPath(savedBackupPath)
+      setPreviewDataPath(dataPath || '')
+      setPathSaved(false)
     }
-  }, [isOpen, currentTheme, savedTextFontSize, savedBackupPath])
+  }, [isOpen, currentTheme, savedTextFontSize, savedBackupPath, dataPath])
 
   /**
    * 应用文本字体大小到 CSS 变量（仅用于卡片文本）
@@ -163,7 +171,39 @@ function Settings() {
   }
 
   /**
-   * 选择存储路径
+   * 选择数据存储路径
+   */
+  const handleSelectDataPath = async () => {
+    const result = await window.electronAPI.dialog.selectFolder()
+    if (result && !result.canceled && result.filePaths[0]) {
+      setPreviewDataPath(result.filePaths[0])
+      setPathSaved(false)
+    }
+  }
+
+  /**
+   * 保存数据存储路径
+   */
+  const handleSaveDataPath = async () => {
+    if (!previewDataPath) return
+    
+    setIsSavingPath(true)
+    try {
+      const result = await window.electronAPI.database.setPath(previewDataPath)
+      if (result.success) {
+        setDataPath(previewDataPath)
+        setPathSaved(true)
+        setTimeout(() => setPathSaved(false), 2000)
+      }
+    } catch (error) {
+      console.error('Failed to save data path:', error)
+    } finally {
+      setIsSavingPath(false)
+    }
+  }
+
+  /**
+   * 选择备份路径
    */
   const handleSelectPath = async () => {
     const result = await window.electronAPI.dialog.selectFolder()
@@ -218,6 +258,53 @@ function Settings() {
               </header>
 
               <div className="settings-content">
+                {/* 数据存储路径 */}
+                <section className="settings-section">
+                  <h3 className="section-title">
+                    <FolderOpen size={18} />
+                    数据存储路径
+                  </h3>
+                  <div className="path-input-wrapper">
+                    <input
+                      type="text"
+                      className="path-input"
+                      value={previewDataPath || '请选择数据存储位置'}
+                      readOnly
+                    />
+                    <button className="path-btn" onClick={handleSelectDataPath} disabled={isSavingPath}>
+                      选择路径
+                    </button>
+                  </div>
+                  <div style={{ display: 'flex', gap: '12px', marginTop: '12px' }}>
+                    <button
+                      className="save-btn"
+                      onClick={handleSaveDataPath}
+                      disabled={!previewDataPath || isSavingPath || previewDataPath === dataPath}
+                      style={{ 
+                        flex: 1, 
+                        opacity: (!previewDataPath || isSavingPath || previewDataPath === dataPath) ? 0.5 : 1 
+                      }}
+                    >
+                      {isSavingPath ? (
+                        <>
+                          <RefreshCw size={16} style={{ animation: 'spin 1s linear infinite' }} />
+                          保存中...
+                        </>
+                      ) : pathSaved ? (
+                        <>
+                          <Check size={16} />
+                          已保存
+                        </>
+                      ) : (
+                        '保存路径'
+                      )}
+                    </button>
+                  </div>
+                  <p className="section-hint">
+                    选择数据库、附件和所有数据的存储位置。更改后会自动迁移现有数据。
+                  </p>
+                </section>
+
                 {/* 主题选择 */}
                 <section className="settings-section">
                   <h3 className="section-title">
@@ -244,26 +331,6 @@ function Settings() {
                   </div>
                 </section>
 
-                {/* 存储路径 */}
-                <section className="settings-section">
-                  <h3 className="section-title">
-                    <FolderOpen size={18} />
-                    数据存储路径
-                  </h3>
-                  <div className="path-input-wrapper">
-                    <input
-                      type="text"
-                      className="path-input"
-                      value={previewBackupPath || '使用默认路径'}
-                      readOnly
-                    />
-                    <button className="path-btn" onClick={handleSelectPath}>
-                      选择路径
-                    </button>
-                  </div>
-                  <p className="section-hint">选择数据备份和附件存储的位置</p>
-                </section>
-
                 {/* 文本字体大小 */}
                 <section className="settings-section">
                   <h3 className="section-title">
@@ -286,6 +353,26 @@ function Settings() {
                   <p className="section-hint">
                     调整便签、链接、图文卡片的文本大小（笔记文档不受影响）
                   </p>
+                </section>
+
+                {/* 备份路径 */}
+                <section className="settings-section">
+                  <h3 className="section-title">
+                    <Download size={18} />
+                    备份路径
+                  </h3>
+                  <div className="path-input-wrapper">
+                    <input
+                      type="text"
+                      className="path-input"
+                      value={previewBackupPath || '使用默认路径'}
+                      readOnly
+                    />
+                    <button className="path-btn" onClick={handleSelectPath}>
+                      选择路径
+                    </button>
+                  </div>
+                  <p className="section-hint">选择数据备份存储的位置</p>
                 </section>
               </div>
             </div>
