@@ -9,7 +9,7 @@ import { useSidebarStore } from '../../stores/sidebarStore'
 import { useEditModalStore } from '../../stores'
 import './CardGrid.css'
 
-type CardType = 'note' | 'doc' | 'link' | 'image'
+type CardType = 'note' | 'doc' | 'link' | 'image' | 'todo'
 
 type CardStatus = 'active' | 'archived' | 'deleted'
 
@@ -35,7 +35,7 @@ interface CardData {
  * 判断卡片类型使用的布局
  */
 const getCardLayout = (type: CardType): 'masonry' | 'grid' => {
-  return type === 'note' || type === 'image' ? 'masonry' : 'grid'
+  return type === 'note' || type === 'image' || type === 'todo' ? 'masonry' : 'grid'
 }
 
 /**
@@ -110,7 +110,7 @@ function CardGrid() {
    */
   const getCurrentCardType = (): CardType | null => {
     if (activeNavId === 'all') return null
-    if (['note', 'doc', 'link', 'image'].includes(activeNavId)) {
+    if (['note', 'todo', 'doc', 'link', 'image'].includes(activeNavId)) {
       return activeNavId as CardType
     }
     return null
@@ -126,6 +126,8 @@ function CardGrid() {
       openEditModal(null, 'link')
     } else if (cardType === 'image') {
       setShowImageEditor(true)
+    } else if (cardType === 'todo') {
+      openEditModal(null, 'todo')
     } else if (cardType) {
       handleCreateSimpleCard(cardType)
     } else {
@@ -158,9 +160,10 @@ function CardGrid() {
    */
   const handleCreateSimpleCard = async (type: CardType) => {
     try {
+      const defaultContent = type === 'todo' ? JSON.stringify({ items: [] }) : ''
       const newCard = await window.electronAPI.card.create({
         title: '',
-        content: '',
+        content: defaultContent,
         type,
         tabId: null,
       })
@@ -295,7 +298,7 @@ function CardGrid() {
           <div className="mixed-layout">
             {masonryCards.length > 0 && (
               <div className="masonry-section">
-                <div className="section-label">便签 & 图文</div>
+                <div className="section-label">便签、待办 & 图文</div>
                 <div className="masonry-grid">
                   <AnimatePresence mode="popLayout">
                     {masonryCards.map(card => (

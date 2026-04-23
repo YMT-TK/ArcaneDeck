@@ -22,6 +22,7 @@ const getNavTitle = (navId: string): string => {
   const titles: Record<string, string> = {
     all: '全部卡片',
     note: '便签',
+    todo: '待办',
     doc: '笔记',
     link: '链接',
     image: '图文',

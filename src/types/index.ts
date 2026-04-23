@@ -64,7 +64,23 @@ declare global {
 /**
  * 卡片类型枚举
  */
-export type CardType = 'note' | 'doc' | 'link' | 'image'
+export type CardType = 'note' | 'doc' | 'link' | 'image' | 'todo'
+
+/**
+ * 待办事项接口
+ */
+export interface TodoItem {
+  id: string
+  text: string
+  completed: boolean
+}
+
+/**
+ * 待办列表数据接口
+ */
+export interface TodoListData {
+  items: TodoItem[]
+}
 
 /**
  * 卡片状态枚举

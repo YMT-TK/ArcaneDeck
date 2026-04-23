@@ -1,7 +1,7 @@
 import { Search, Bell, Download, RefreshCw, Plus } from 'lucide-react'
 import { useState } from 'react'
 
-type CardType = 'note' | 'doc' | 'link' | 'image'
+type CardType = 'note' | 'doc' | 'link' | 'image' | 'todo'
 
 /**
  * 头部组件
@@ -118,13 +118,15 @@ function Header() {
               添加
               {getCurrentType() === 'note'
                 ? '便签'
-                : getCurrentType() === 'doc'
-                  ? '笔记'
-                  : getCurrentType() === 'link'
-                    ? '链接'
-                    : getCurrentType() === 'image'
-                      ? '图文'
-                      : '卡片'}
+                : getCurrentType() === 'todo'
+                  ? '待办'
+                  : getCurrentType() === 'doc'
+                    ? '笔记'
+                    : getCurrentType() === 'link'
+                      ? '链接'
+                      : getCurrentType() === 'image'
+                        ? '图文'
+                        : '卡片'}
             </span>
           </button>
         )}

@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import { useEditModalStore, useCardStore } from '../../stores'
 import TiptapEditor from '../Editor/TiptapEditor'
+import TodoListEditor from '../TodoListEditor'
 import './EditModal.css'
 
 /**
@@ -40,6 +41,7 @@ const EditModal = () => {
   const [isFetchingFavicon, setIsFetchingFavicon] = useState(false)
   const [noteContent, setNoteContent] = useState('')
   const [docContent, setDocContent] = useState('')
+  const [todoContent, setTodoContent] = useState('')
   const [tags, setTags] = useState<string[]>([])
   const [tagInput, setTagInput] = useState('')
 
@@ -52,10 +54,17 @@ const EditModal = () => {
    * 初始化表单数据
    */
   useEffect(() => {
+    console.log('=== EditModal initializing ===')
+    console.log('isOpen:', isOpen)
+    console.log('isNew:', isNew)
+    console.log('currentCard:', currentCard)
+
     if (isOpen) {
       if (isNew) {
+        console.log('Handling reset for new card')
         handleReset()
       } else if (currentCard) {
+        console.log('Loading existing card data')
         setTitle(currentCard.title || '')
         setUrl(currentCard.url || '')
         setFavicon(currentCard.favicon || '')
@@ -63,10 +72,60 @@ const EditModal = () => {
         setSelectedType('entertainment')
         setNoteContent(currentCard.type === 'note' ? currentCard.content || '' : '')
         setDocContent(currentCard.type === 'doc' ? currentCard.content || '' : '')
+
+        /**
+         * 解码 HTML 实体 - 简单但可靠的实现
+         */
+        const decodeHtmlEntities = (str: string): string => {
+          return str
+            .replace(/&quot;/g, '"')
+            .replace(/&#34;/g, '"')
+            .replace(/&amp;/g, '&')
+            .replace(/&#38;/g, '&')
+            .replace(/&lt;/g, '<')
+            .replace(/&#60;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&#62;/g, '>')
+            .replace(/&apos;/g, "'")
+            .replace(/&#39;/g, "'")
+        }
+
+        const rawTodoContent = currentCard.type === 'todo' ? currentCard.content || '' : ''
+        // 确保 todoContent 始终是有效的 JSON
+        let todoContentValue: string
+        try {
+          if (rawTodoContent) {
+            // 首先尝试直接解析
+            try {
+              JSON.parse(rawTodoContent)
+              todoContentValue = rawTodoContent
+            } catch {
+              // 如果直接解析失败，尝试解码
+              const decodedContent = decodeHtmlEntities(rawTodoContent)
+              JSON.parse(decodedContent)
+              todoContentValue = decodedContent
+            }
+          } else {
+            todoContentValue = JSON.stringify({ items: [] })
+          }
+        } catch {
+          todoContentValue = JSON.stringify({ items: [] })
+        }
+        console.log('Setting todoContent to:', todoContentValue)
+        setTodoContent(todoContentValue)
+
         setTags([])
       }
     }
   }, [currentCard, isNew, isOpen])
+
+  /**
+   * 追踪 todoContent 的变化
+   */
+  useEffect(() => {
+    console.log('=== todoContent changed ===')
+    console.log('New value:', todoContent)
+  }, [todoContent])
 
   /**
    * 按下ESC键关闭弹窗
@@ -238,6 +297,43 @@ const EditModal = () => {
           console.error('Failed to update doc card:', error)
         }
       }
+    } else if (cardType === 'todo') {
+      console.log('=== handleSave for todo ===')
+      console.log('isNew:', isNew)
+      console.log('todoContent:', todoContent)
+      console.log('cardId:', cardId)
+
+      if (isNew) {
+        try {
+          console.log('Creating new todo card with content:', todoContent)
+          const newCard = await window.electronAPI.card.create({
+            title: title || '待办事项',
+            content: todoContent,
+            type: 'todo',
+            tabId: null,
+          })
+          console.log('New todo card created:', newCard)
+          addCard(newCard)
+          closeEditModal()
+        } catch (error) {
+          console.error('Failed to create todo card:', error)
+        }
+      } else {
+        if (!cardId) return
+        try {
+          console.log('Updating todo card with content:', todoContent)
+          const updatedCard = await window.electronAPI.card.update(cardId, {
+            title,
+            content: todoContent,
+            type: 'todo', // 显式传递 type，确保 CardService 知道这是 todo 卡片
+          })
+          console.log('Todo card updated:', updatedCard)
+          updateCard(cardId, updatedCard)
+          closeEditModal()
+        } catch (error) {
+          console.error('Failed to update todo card:', error)
+        }
+      }
     }
   }
 
@@ -252,6 +348,7 @@ const EditModal = () => {
     setSelectedType('entertainment')
     setNoteContent('')
     setDocContent('')
+    setTodoContent(JSON.stringify({ items: [] }))
     setTags([])
     setTagInput('')
   }
@@ -767,6 +864,148 @@ const EditModal = () => {
   )
 
   /**
+   * 渲染待办事项编辑表单
+   */
+  const renderTodoForm = () => (
+    <div
+      className="relative w-full max-w-4xl max-h-[921px] flex flex-col overflow-hidden"
+      style={{ backgroundColor: '#fff8f2' }}
+    >
+      <div className="relative p-8 pb-4">
+        <div className="absolute top-4 right-8">
+          <button
+            className="hover:text-primary transition-colors active:scale-90"
+            onClick={closeEditModal}
+            style={{ color: 'rgba(67, 0, 0, 0.4)' }}
+          >
+            <X size={32} />
+          </button>
+        </div>
+        <input
+          className="w-full bg-transparent border-none p-0 italic text-4xl focus:ring-0"
+          placeholder="待办事项列表..."
+          type="text"
+          value={title}
+          onChange={e => setTitle(e.target.value)}
+          style={{
+            fontFamily: 'Georgia, serif',
+            color: '#430000',
+          }}
+        />
+        <div className="h-px w-32 mt-2" style={{ backgroundColor: 'rgba(160, 65, 0, 0.3)' }}></div>
+      </div>
+
+      <div className="relative flex-grow px-8 py-4 overflow-y-auto">
+        <TodoListEditor
+          content={todoContent}
+          onChange={newContent => {
+            console.log('=== TodoListEditor onChange called ===')
+            console.log('newContent:', newContent)
+            setTodoContent(newContent)
+          }}
+        />
+      </div>
+
+      <div
+        className="relative p-8 border-t"
+        style={{
+          backgroundColor: 'rgba(252, 236, 210, 0.5)',
+          borderColor: 'rgba(218, 193, 191, 0.1)',
+        }}
+      >
+        <div className="flex flex-wrap items-center gap-4 mb-8">
+          <span
+            className="text-sm italic flex items-center gap-1"
+            style={{ fontFamily: 'Georgia, serif', color: 'rgba(67, 0, 0, 0.6)' }}
+          >
+            <Tag size={18} />
+            Sigils:
+          </span>
+          {tags.map((tag, index) => (
+            <div key={index} className="relative flex items-center">
+              <span
+                className="px-4 py-1.5 text-sm pr-6 shadow-sm"
+                style={{
+                  backgroundColor: '#a04100',
+                  color: '#ffffff',
+                  fontFamily: 'Georgia, serif',
+                  fontStyle: 'italic',
+                  clipPath: 'polygon(0% 0%, 100% 0%, 100% 50%, 85% 100%, 0% 100%)',
+                }}
+              >
+                {tag}
+              </span>
+              <button
+                onClick={() => handleRemoveTag(tag)}
+                className="absolute -right-1 w-4 h-4 rounded-full flex items-center justify-center"
+                style={{ backgroundColor: '#430000', border: '2px solid rgba(160, 65, 0, 0.5)' }}
+              >
+                <X size={10} style={{ color: '#ffffff' }} />
+              </button>
+            </div>
+          ))}
+          <div className="relative">
+            <input
+              className="bg-transparent border-none p-0 text-sm focus:ring-0 w-24 border-b"
+              placeholder="Add sigil..."
+              type="text"
+              value={tagInput}
+              onChange={e => setTagInput(e.target.value)}
+              onKeyDown={handleAddTag}
+              style={{
+                fontFamily: 'Georgia, serif',
+                fontStyle: 'italic',
+                color: '#544241',
+                borderColor: 'rgba(67, 0, 0, 0.1)',
+              }}
+            />
+          </div>
+        </div>
+
+        <div className="flex justify-between items-center">
+          <button
+            className="flex items-center gap-2 transition-colors italic"
+            style={{ fontFamily: 'Georgia, serif', color: 'rgba(67, 0, 0, 0.6)' }}
+          >
+            <Eraser size={20} />
+            Discard
+          </button>
+          <div className="flex gap-6 items-center">
+            <button
+              className="transition-colors italic"
+              style={{ fontFamily: 'Georgia, serif', color: 'rgba(67, 0, 0, 0.6)' }}
+            >
+              Save as Draft
+            </button>
+            <button
+              onClick={handleSave}
+              className="relative px-10 py-3 rounded-full italic text-lg hover:translate-y-[-1px] active:scale-[0.98] transition-all overflow-hidden"
+              style={{
+                fontFamily: 'Georgia, serif',
+                backgroundColor: '#430000',
+                color: '#ffffff',
+                boxShadow: '0 4px 15px rgba(67, 0, 0, 0.3)',
+              }}
+            >
+              <div
+                className="absolute inset-0 opacity-50"
+                style={{
+                  background:
+                    'linear-gradient(to right, #430000, transparent, rgba(255, 255, 255, 0.1))',
+                }}
+              ></div>
+              <span className="relative flex items-center gap-2">
+                <Sparkles size={24} fill="currentColor" />
+                {isNew ? '创建待办' : '保存待办'}
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+
+  /**
    * 根据卡片类型渲染不同的内容
    */
   const renderContent = () => {
@@ -777,6 +1016,8 @@ const EditModal = () => {
         return renderNoteForm()
       case 'doc':
         return renderDocForm()
+      case 'todo':
+        return renderTodoForm()
       case 'image':
       default:
         return (
@@ -807,11 +1048,13 @@ const EditModal = () => {
 
   return (
     <div className="edit-modal-overlay" onClick={handleOverlayClick}>
-      {cardType === 'note' || cardType === 'doc' ? (
+      {cardType === 'note' || cardType === 'doc' || cardType === 'todo' ? (
         cardType === 'note' ? (
           renderNoteForm()
-        ) : (
+        ) : cardType === 'doc' ? (
           renderDocForm()
+        ) : (
+          renderTodoForm()
         )
       ) : (
         <div className="edit-modal-container">

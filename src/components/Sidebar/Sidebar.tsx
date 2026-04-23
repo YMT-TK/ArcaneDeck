@@ -8,6 +8,7 @@ import {
   Sparkles,
   BookOpen,
   HelpCircle,
+  CheckSquare,
 } from 'lucide-react'
 import { useSettingsStore, useSidebarStore, useCardStore } from '../../stores'
 import './Sidebar.css'
@@ -19,7 +20,7 @@ interface NavItem {
   id: string
   icon: React.ComponentType<any>
   label: string
-  type?: 'note' | 'doc' | 'link' | 'image'
+  type?: 'note' | 'doc' | 'link' | 'image' | 'todo'
 }
 
 /**
@@ -41,6 +42,7 @@ function Sidebar() {
   const navItems: NavItem[] = [
     { id: 'all', icon: Sparkles, label: '全部' },
     { id: 'note', icon: StickyNote, label: '便签', type: 'note' },
+    { id: 'todo', icon: CheckSquare, label: '待办', type: 'todo' },
     { id: 'doc', icon: FileText, label: '笔记', type: 'doc' },
     { id: 'link', icon: Link, label: '链接', type: 'link' },
     { id: 'image', icon: Image, label: '图文', type: 'image' },

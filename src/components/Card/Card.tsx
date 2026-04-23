@@ -9,8 +9,25 @@ import './Card.css'
  * - doc: 笔记（统一网格布局）
  * - link: 网址（统一网格布局）
  * - image: 图文（瀑布流布局）
+ * - todo: 备忘录（瀑布流布局）
  */
-type CardType = 'note' | 'doc' | 'link' | 'image'
+type CardType = 'note' | 'doc' | 'link' | 'image' | 'todo'
+
+/**
+ * 待办事项接口
+ */
+interface TodoItem {
+  id: string
+  text: string
+  completed: boolean
+}
+
+/**
+ * 待办列表数据接口
+ */
+interface TodoListData {
+  items: TodoItem[]
+}
 
 /**
  * 卡片状态
@@ -108,7 +125,111 @@ const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
   const isDeleted = status === 'deleted'
 
   /**
-   * 渲染统一模板的卡片（便签和笔记）
+   * 解码 HTML 实体 - 简单但可靠的实现
+   */
+  const decodeHtmlEntities = (str: string): string => {
+    return str
+      .replace(/&quot;/g, '"')
+      .replace(/&#34;/g, '"')
+      .replace(/&amp;/g, '&')
+      .replace(/&#38;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&#60;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&#62;/g, '>')
+      .replace(/&apos;/g, "'")
+      .replace(/&#39;/g, "'")
+  }
+
+  /**
+   * 解析待办列表数据
+   */
+  const parseTodoContent = (): TodoListData => {
+    console.log('=== Card parseTodoContent ===')
+    console.log('Card ID:', id)
+    console.log('Card Type:', type)
+    console.log('Raw content:', content)
+    
+    // 如果不是 todo 类型，直接返回空数组
+    if (type !== 'todo') {
+      console.log('Not a todo card, returning empty items')
+      return { items: [] }
+    }
+    
+    try {
+      // 处理 content 为 null、undefined 或空字符串的情况
+      if (!content || content.trim() === '') {
+        console.log('Content is empty, returning default')
+        return { items: [] }
+      }
+      
+      // 解码 HTML 实体
+      let decodedContent = decodeHtmlEntities(content)
+      console.log('Decoded content:', decodedContent)
+      
+      // 尝试直接解析原始内容，如果失败，再尝试解码后的内容
+      let parsed
+      try {
+        parsed = JSON.parse(content)
+      } catch (e) {
+        console.log('Direct parse failed, trying decoded content')
+        parsed = JSON.parse(decodedContent)
+      }
+      
+      console.log('Parsed content:', parsed)
+      
+      // 确保 items 是数组
+      if (!Array.isArray(parsed.items)) {
+        console.warn('Parsed content has no valid items array')
+        return { items: [] }
+      }
+      
+      return parsed
+    } catch (error) {
+      console.error('Failed to parse todo content:', error)
+      console.error('Content that caused error:', content)
+      return { items: [] }
+    }
+  }
+
+  /**
+   * 渲染待办预览
+   */
+  const renderTodoPreview = () => {
+    const todoData = parseTodoContent()
+    const completedCount = todoData.items.filter(item => item.completed).length
+    const totalCount = todoData.items.length
+
+    return (
+      <div className="todo-preview">
+        <div className="todo-summary">
+          {totalCount === 0 ? (
+            <span className="todo-empty">待办事项列表</span>
+          ) : (
+            <span className="todo-count">
+              {completedCount}/{totalCount} 已完成
+            </span>
+          )}
+        </div>
+        {todoData.items.slice(0, 3).map(item => (
+          <div key={item.id} className="todo-item-preview">
+            <div className={`todo-checkbox ${item.completed ? 'todo-checkbox-checked' : ''}`}>
+              {item.completed && <span className="todo-checkmark">✓</span>}
+            </div>
+            <span className={`todo-text ${item.completed ? 'todo-text-completed' : ''}`}>
+              {item.text.length > 20 ? item.text.slice(0, 20) + '...' : item.text}
+            </span>
+          </div>
+        ))}
+        {todoData.items.length > 3 && (
+          <span className="todo-more">还有 {todoData.items.length - 3} 项...</span>
+        )}
+      </div>
+    )
+  }
+
+  /**
+   * 渲染统一模板的卡片（便签、笔记、备忘录）
    */
   const renderUnifiedCard = () => {
     const rotation = 'rotate-2'
@@ -118,7 +239,9 @@ const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
       <div className={`unified-card torn-edge ${bgClass} ${rotation} group`} data-pinned={pinned}>
         <div className="card-inner">
           <div className="card-top">
-            <span className="card-title-unified">{title || '无标题'}</span>
+            <span className="card-title-unified">
+              {title || (type === 'todo' ? '待办事项' : '无标题')}
+            </span>
             <div className="card-actions-unified">
               <button
                 className="card-action-icon"
@@ -143,13 +266,23 @@ const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
             </div>
           </div>
           <div className="card-content-unified">
-            <p>{truncateContent(content) || '点击添加内容...'}</p>
+            {type === 'todo' ? (
+              renderTodoPreview()
+            ) : (
+              <p>{truncateContent(content) || '点击添加内容...'}</p>
+            )}
           </div>
           <div className="card-bottom">
             <span className="card-date-unified">{formatDate(updatedAt)}</span>
             <div className="card-badges">
-              <div className="badge">✨</div>
-              <div className="badge">📜</div>
+              {type === 'todo' ? (
+                <div className="badge">✅</div>
+              ) : (
+                <>
+                  <div className="badge">✨</div>
+                  <div className="badge">📜</div>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -304,6 +437,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
     switch (type) {
       case 'note':
       case 'doc':
+      case 'todo':
         return renderUnifiedCard()
       case 'link':
         return renderLinkCard()
@@ -313,7 +447,7 @@ const Card = forwardRef<HTMLDivElement, CardProps>(function Card(
     }
   }
 
-  if (type === 'note' || type === 'doc') {
+  if (type === 'note' || type === 'doc' || type === 'todo') {
     return (
       <motion.div
         ref={ref}

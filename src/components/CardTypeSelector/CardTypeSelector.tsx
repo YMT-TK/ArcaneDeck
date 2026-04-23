@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { StickyNote, FileText, Link, Image, X } from 'lucide-react'
+import { StickyNote, FileText, Link, Image, X, CheckSquare } from 'lucide-react'
 import './CardTypeSelector.css'
 
 /**
  * 卡片类型定义
  */
 export interface CardTypeOption {
-  type: 'note' | 'doc' | 'link' | 'image'
+  type: 'note' | 'doc' | 'link' | 'image' | 'todo'
   label: string
   description: string
   icon: typeof StickyNote
@@ -23,6 +23,13 @@ export const CARD_TYPES: CardTypeOption[] = [
     label: '便签',
     description: '快速记录灵感、待办事项',
     icon: StickyNote,
+    layout: 'masonry',
+  },
+  {
+    type: 'todo',
+    label: '待办',
+    description: '带复选框的任务列表',
+    icon: CheckSquare,
     layout: 'masonry',
   },
   {
@@ -54,7 +61,7 @@ export const CARD_TYPES: CardTypeOption[] = [
 interface CardTypeSelectorProps {
   isOpen: boolean
   onClose: () => void
-  onSelect: (type: 'note' | 'doc' | 'link' | 'image') => void
+  onSelect: (type: 'note' | 'doc' | 'link' | 'image' | 'todo') => void
 }
 
 /**
@@ -64,7 +71,7 @@ interface CardTypeSelectorProps {
 function CardTypeSelector({ isOpen, onClose, onSelect }: CardTypeSelectorProps) {
   const [hoveredType, setHoveredType] = useState<string | null>(null)
 
-  const handleSelect = (type: 'note' | 'doc' | 'link' | 'image') => {
+  const handleSelect = (type: 'note' | 'doc' | 'link' | 'image' | 'todo') => {
     onSelect(type)
     onClose()
   }
@@ -125,7 +132,7 @@ function CardTypeSelector({ isOpen, onClose, onSelect }: CardTypeSelectorProps) 
 
             <div className="type-selector-footer">
               <p className="type-selector-hint">
-                💡 提示：便签和图文使用瀑布流布局，笔记和网址使用网格布局
+                💡 提示：便签、待办和图文使用瀑布流布局，笔记和网址使用网格布局
               </p>
             </div>
           </motion.div>

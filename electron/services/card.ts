@@ -9,8 +9,9 @@ import { AttachmentService } from './attachment'
  * - doc: 笔记（统一网格布局）
  * - link: 网址（统一网格布局）
  * - image: 图文（瀑布流布局）
+ * - todo: 待办（瀑布流布局）
  */
-export type CardType = 'note' | 'doc' | 'link' | 'image'
+export type CardType = 'note' | 'doc' | 'link' | 'image' | 'todo'
 
 /**
  * 卡片状态
@@ -59,7 +60,8 @@ export class CardService {
   static async create(data: CreateCardInput): Promise<Card> {
     const prisma = await getPrisma()
     const sanitizedTitle = this.sanitizeInput(data.title)
-    const sanitizedContent = this.sanitizeInput(data.content)
+    // 待办卡片存储的是 JSON 数据，不要转义
+    const sanitizedContent = data.type === 'todo' ? data.content : this.sanitizeInput(data.content)
 
     const maxPosition = await prisma.card.aggregate({
       where: { tabId: data.tabId ?? null, status: 'active' },
@@ -90,11 +92,20 @@ export class CardService {
     const prisma = await getPrisma()
     const updateData: UpdateCardInput = { ...data }
 
+    // 获取当前卡片类型
+    const currentCard = await prisma.card.findUnique({
+      where: { id },
+      select: { type: true },
+    })
+
     if (data.title) {
       updateData.title = this.sanitizeInput(data.title)
     }
     if (data.content) {
-      updateData.content = this.sanitizeInput(data.content)
+      // 待办卡片存储的是 JSON 数据，不要转义
+      updateData.content = (currentCard?.type === 'todo' || data.type === 'todo') 
+        ? data.content 
+        : this.sanitizeInput(data.content)
     }
 
     const oldCard = await prisma.card.findUnique({

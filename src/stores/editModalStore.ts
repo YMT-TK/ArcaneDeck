@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-type CardType = 'note' | 'doc' | 'link' | 'image'
+type CardType = 'note' | 'doc' | 'link' | 'image' | 'todo'
 
 interface EditModalStore {
   isOpen: boolean
